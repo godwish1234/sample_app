@@ -1,0 +1,16 @@
+{
+  "languages": [
+    {
+      "id": "en-US",
+      "languageCode": "en",
+      "countryCode": "US",
+      "title": "English"
+    },
+    {
+      "id": "id-ID",
+      "languageCode": "id",
+      "countryCode": "ID",
+      "title": "Bahasa"
+    }
+  ]
+}
