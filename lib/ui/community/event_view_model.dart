@@ -49,6 +49,30 @@ class EventItem {
     required this.attendees,
     this.isAttending = false,
   });
+
+  EventItem copyWith({
+    String? id,
+    String? title,
+    String? description,
+    String? imageUrl,
+    DateTime? eventDate,
+    String? location,
+    String? sportType,
+    int? attendees,
+    bool? isAttending,
+  }) {
+    return EventItem(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      imageUrl: imageUrl ?? this.imageUrl,
+      eventDate: eventDate ?? this.eventDate,
+      location: location ?? this.location,
+      sportType: sportType ?? this.sportType,
+      attendees: attendees ?? this.attendees,
+      isAttending: isAttending ?? this.isAttending,
+    );
+  }
 }
 
 class TeamChallenge {
@@ -73,7 +97,7 @@ class TeamChallenge {
   });
 }
 
-class CommunityViewModel extends BaseViewModel {
+class EventViewModel extends BaseViewModel {
   final _navigationService = GetIt.instance<NavigationService>();
 
   int _selectedTabIndex = 0;
@@ -96,6 +120,14 @@ class CommunityViewModel extends BaseViewModel {
   bool _isLoadingPosts = false;
   bool get isLoadingPosts => _isLoadingPosts;
 
+  bool _isBusy = false;
+  bool get isBusy => _isBusy;
+
+  void setBusy(bool value) {
+    _isBusy = value;
+    notifyListeners();
+  }
+
   Future<void> initialize() async {
     await Future.wait([
       _loadForumPosts(),
@@ -110,7 +142,6 @@ class CommunityViewModel extends BaseViewModel {
 
     try {
       await Future.delayed(const Duration(milliseconds: 800));
-
       _forumPosts = _getSampleForumPosts();
     } catch (e) {
       debugPrint('Error loading forum posts: $e');
@@ -123,7 +154,6 @@ class CommunityViewModel extends BaseViewModel {
   Future<void> _loadEvents() async {
     try {
       await Future.delayed(const Duration(milliseconds: 600));
-
       _events = _getSampleEvents();
     } catch (e) {
       debugPrint('Error loading events: $e');
@@ -134,7 +164,6 @@ class CommunityViewModel extends BaseViewModel {
   Future<void> _loadChallenges() async {
     try {
       await Future.delayed(const Duration(milliseconds: 700));
-
       _challenges = _getSampleChallenges();
     } catch (e) {
       debugPrint('Error loading challenges: $e');
@@ -150,30 +179,25 @@ class CommunityViewModel extends BaseViewModel {
 
   void navigateToForumDetail(String postId) {
     debugPrint('Navigating to forum post: $postId');
+    // _navigationService.navigateToForumDetail(postId);
   }
 
   void navigateToEventDetail(String eventId) {
     debugPrint('Navigating to event: $eventId');
+    // _navigationService.navigateToEventDetail(eventId);
   }
 
   void navigateToChallengeDetail(String challengeId) {
     debugPrint('Navigating to challenge: $challengeId');
+    // _navigationService.navigateToChallengeDetail(challengeId);
   }
 
   void toggleEventAttendance(String eventId) {
     final index = _events.indexWhere((event) => event.id == eventId);
     if (index >= 0) {
       final event = _events[index];
-      _events[index] = EventItem(
-        id: event.id,
-        title: event.title,
-        description: event.description,
-        imageUrl: event.imageUrl,
-        eventDate: event.eventDate,
-        location: event.location,
-        sportType: event.sportType,
-        attendees:
-            event.isAttending ? event.attendees - 1 : event.attendees + 1,
+      _events[index] = event.copyWith(
+        attendees: event.isAttending ? event.attendees - 1 : event.attendees + 1,
         isAttending: !event.isAttending,
       );
       notifyListeners();
@@ -201,10 +225,12 @@ class CommunityViewModel extends BaseViewModel {
 
   void navigateToCreateForumPost() {
     debugPrint('Navigating to create forum post');
+    // _navigationService.navigateToCreateForumPost();
   }
 
   void navigateToCreateChallenge() {
     debugPrint('Navigating to create challenge');
+    // _navigationService.navigateToCreateChallenge();
   }
 
   List<ForumPost> _getSampleForumPosts() {
@@ -366,5 +392,15 @@ class CommunityViewModel extends BaseViewModel {
         playersNeeded: 2,
       ),
     ];
+  }
+}
+
+extension EventViewModelUpdate on EventViewModel {
+  void updateEventAttendance(EventItem updatedEvent) {
+    final index = _events.indexWhere((e) => e.id == updatedEvent.id);
+    if (index != -1) {
+      _events[index] = updatedEvent;
+      notifyListeners();
+    }
   }
 }

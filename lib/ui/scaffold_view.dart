@@ -1,7 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:sample_app/ui/bookings/bookings_view.dart';
-import 'package:sample_app/ui/community/community_view.dart';
+import 'package:sample_app/ui/activities/activities_view.dart';
+import 'package:sample_app/ui/activities/create_booking_view.dart';
+import 'package:sample_app/ui/community/event_view.dart';
 import 'package:stacked/stacked.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sample_app/ui/home/home_view.dart';
@@ -72,7 +73,7 @@ class _ScaffoldViewState extends State<ScaffoldView>
     final children = [
       const HomeView(),
       const BookingsView(),
-      const CommunityView(),
+      const EventView(),
       const ProfileView()
     ];
 
@@ -213,63 +214,11 @@ class _ScaffoldViewState extends State<ScaffoldView>
     );
   }
 
-  void _showAddOptionsBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.3,
-        decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
-            Container(
-              width: 40,
-              height: 5,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              "Quick Actions",
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildOptionItem(context, Icons.add_business, "New Booking",
-                        () {
-                      Navigator.pop(context);
-                    }),
-                    _buildOptionItem(
-                        context, Icons.sports_basketball, "Find Court", () {
-                      Navigator.pop(context);
-                    }),
-                    _buildOptionItem(context, Icons.schedule, "Schedule", () {
-                      Navigator.pop(context);
-                    }),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+  void _showAddOptionsBottomSheet(BuildContext context) async {
+    // Instead of showing a bottom sheet, navigate to the booking creation page
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const CreateBookingView(),
       ),
     );
   }

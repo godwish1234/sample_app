@@ -21,6 +21,9 @@ class Booking {
   final String sportType;
   final double price;
   final BookingStatus status;
+  final bool isPublicEvent;
+  final bool isHost;
+  final bool isCoHost; // <-- NEW
 
   Booking({
     required this.id,
@@ -32,7 +35,40 @@ class Booking {
     required this.sportType,
     required this.price,
     required this.status,
+    required this.isPublicEvent,
+    required this.isHost,
+    this.isCoHost = false, // <-- NEW
   });
+
+  Booking copyWith({
+    String? id,
+    String? courtName,
+    String? courtImageUrl,
+    String? location,
+    DateTime? startDateTime,
+    DateTime? endDateTime,
+    String? sportType,
+    double? price,
+    BookingStatus? status,
+    bool? isPublicEvent,
+    bool? isHost,
+    bool? isCoHost,
+  }) {
+    return Booking(
+      id: id ?? this.id,
+      courtName: courtName ?? this.courtName,
+      courtImageUrl: courtImageUrl ?? this.courtImageUrl,
+      location: location ?? this.location,
+      startDateTime: startDateTime ?? this.startDateTime,
+      endDateTime: endDateTime ?? this.endDateTime,
+      sportType: sportType ?? this.sportType,
+      price: price ?? this.price,
+      status: status ?? this.status,
+      isPublicEvent: isPublicEvent ?? this.isPublicEvent,
+      isHost: isHost ?? this.isHost,
+      isCoHost: isCoHost ?? this.isCoHost,
+    );
+  }
 }
 
 class BookingsViewModel extends BaseViewModel {
@@ -64,6 +100,87 @@ class BookingsViewModel extends BaseViewModel {
 
   int _currentFilterIndex = 0;
   int get currentFilterIndex => _currentFilterIndex;
+
+  Future<void> showInviteDialog(BuildContext context, Booking booking) async {
+    final TextEditingController phoneController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    bool inviteSent = false;
+
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Invite by Phone Number',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Send an invite to join this booking.',
+                style: GoogleFonts.poppins(),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(
+                  labelText: 'Phone Number',
+                  prefixIcon: Icon(Icons.phone),
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Enter a phone number';
+                  }
+                  return null;
+                },
+              ),
+              if (inviteSent)
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Text(
+                    'Invite sent!',
+                    style: GoogleFonts.poppins(
+                      color: Colors.green,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              'Close',
+              style: GoogleFonts.poppins(),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                // Simulate sending invite
+                inviteSent = true;
+                // You can add your invite logic here
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Invite sent!')),
+                );
+              }
+            },
+            child: Text(
+              'Send Invite',
+              style: GoogleFonts.poppins(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   void setFilterIndex(int index) {
     _currentFilterIndex = index;
@@ -151,7 +268,6 @@ class BookingsViewModel extends BaseViewModel {
     setBusy(true);
     try {
       await Future.delayed(const Duration(seconds: 1));
-
       final index = _allBookings.indexWhere((b) => b.id == bookingId);
       if (index >= 0) {
         final booking = _allBookings[index];
@@ -165,6 +281,8 @@ class BookingsViewModel extends BaseViewModel {
           sportType: booking.sportType,
           price: booking.price,
           status: BookingStatus.cancelled,
+          isPublicEvent: booking.isPublicEvent,
+          isHost: booking.isHost,
         );
       }
     } catch (e) {
@@ -185,10 +303,13 @@ class BookingsViewModel extends BaseViewModel {
     );
   }
 
+  final String _currentUserId = 'user_1';
+
   List<Booking> _getSampleBookings() {
     final now = DateTime.now();
 
     return [
+      // Host, Public Event
       Booking(
         id: '1',
         courtName: 'Downtown Basketball Court',
@@ -200,7 +321,11 @@ class BookingsViewModel extends BaseViewModel {
         sportType: 'Basketball',
         price: 35.00,
         status: BookingStatus.confirmed,
+        isPublicEvent: true,
+        isHost: true,
+        isCoHost: false,
       ),
+      // Member, Public Event, Co-Host
       Booking(
         id: '2',
         courtName: 'Westside Tennis Club',
@@ -213,7 +338,11 @@ class BookingsViewModel extends BaseViewModel {
         sportType: 'Tennis',
         price: 45.00,
         status: BookingStatus.completed,
+        isPublicEvent: true,
+        isHost: false,
+        isCoHost: true,
       ),
+      // Host, Private Event
       Booking(
         id: '3',
         courtName: 'Greenfield Badminton Courts',
@@ -225,7 +354,11 @@ class BookingsViewModel extends BaseViewModel {
         sportType: 'Badminton',
         price: 25.00,
         status: BookingStatus.pending,
+        isPublicEvent: false,
+        isHost: true,
+        isCoHost: false,
       ),
+      // Member, Private Event
       Booking(
         id: '4',
         courtName: 'Lakeside Soccer Field',
@@ -239,18 +372,25 @@ class BookingsViewModel extends BaseViewModel {
         sportType: 'Soccer',
         price: 60.00,
         status: BookingStatus.cancelled,
+        isPublicEvent: false,
+        isHost: false,
+        isCoHost: false,
       ),
+      // Host, Public Event
       Booking(
         id: '5',
         courtName: 'Sunset Volleyball Courts',
         courtImageUrl:
             'https://images.unsplash.com/photo-1619468129361-605ebea04b44',
         location: 'Sunset Beach',
-        startDateTime: now.add(const Duration(days: 5)),
-        endDateTime: now.add(const Duration(days: 5, hours: 2)),
+        startDateTime: now.add(const Duration(days: 8)),
+        endDateTime: now.add(const Duration(days: 8, hours: 2)),
         sportType: 'Volleyball',
         price: 30.00,
         status: BookingStatus.confirmed,
+        isPublicEvent: true,
+        isHost: true,
+        isCoHost: false,
       ),
     ];
   }

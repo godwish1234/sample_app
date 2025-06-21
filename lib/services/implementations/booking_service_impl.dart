@@ -1,5 +1,5 @@
 import 'package:sample_app/services/interfaces/booking_service.dart';
-import 'package:sample_app/ui/bookings/bookings_view_model.dart';
+import 'package:sample_app/ui/activities/activities_view_model.dart';
 
 class BookingServiceImpl implements BookingService {
   @override
@@ -18,7 +18,7 @@ class BookingServiceImpl implements BookingService {
         endDateTime: DateTime.now().add(Duration(days: 1, hours: 2)),
         sportType: 'Tennis',
         price: 20.0,
-        status: BookingStatus.confirmed,
+        status: BookingStatus.confirmed, isPublicEvent: true, isHost: true,
       ),
       Booking(
         id: '2',
@@ -29,7 +29,7 @@ class BookingServiceImpl implements BookingService {
         endDateTime: DateTime.now().subtract(Duration(days: 2, hours: 2)),
         sportType: 'Badminton',
         price: 15.0,
-        status: BookingStatus.completed,
+        status: BookingStatus.completed, isPublicEvent: false, isHost: false,
       ),
     ];
   }

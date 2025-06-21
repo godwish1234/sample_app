@@ -76,12 +76,6 @@ class AppStateManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  void showMembershipDetailPage(String docID) {
-    _currentScreen = AppLinkLocationKeys.membershipDetail;
-    setDocID(docID);
-    notifyListeners();
-  }
-
   DateTime getTimeNow() {
     DateTime dt = DateTime.now();
     return dt;

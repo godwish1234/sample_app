@@ -63,50 +63,46 @@ class _HomeViewState extends State<HomeView> {
     },
   ];
 
-  final List<Map<String, dynamic>> venueData = [
+  final List<Map<String, String>> reminders = [
     {
-      'imageUrl': 'https://images.unsplash.com/photo-1562552476-8ac59b2a2e46',
-      'name': 'Eastside Tennis Club',
-      'sportType': 'Tennis',
-      'pricePerHour': '\$25-35',
-      'rating': 4.8,
-      'distance': '2.5 km'
+      'type': 'Event',
+      'title': 'Your Tennis Booking',
+      'subtitle': 'Tomorrow, 10:00 AM at Eastside Tennis Club',
+      'icon': 'sports_tennis'
     },
     {
-      'imageUrl':
-          'https://images.unsplash.com/photo-1518277866052-68e740c15463',
-      'name': 'Downtown Basketball Arena',
-      'sportType': 'Basketball',
-      'pricePerHour': '\$20-30',
-      'rating': 4.6,
-      'distance': '1.2 km'
+      'type': 'Payment',
+      'title': 'Payment Due',
+      'subtitle': 'Basketball Arena - \$30, pay before Apr 12',
+      'icon': 'credit_card'
     },
     {
-      'imageUrl':
-          'https://images.unsplash.com/photo-1536122985607-4fe00b283652',
-      'name': 'Greenfield Badminton Courts',
-      'sportType': 'Badminton',
-      'pricePerHour': '\$15-20',
-      'rating': 4.7,
-      'distance': '3.4 km'
+      'type': 'Competition',
+      'title': 'Internal League Match',
+      'subtitle': 'Apr 15, 7:00 PM at Olympic Sports Hall',
+      'icon': 'emoji_events'
+    },
+  ];
+
+  // Dummy competitions
+  final List<Map<String, String>> competitions = [
+    {
+      'title': 'Internal Tennis Doubles',
+      'date': 'Apr 20, 2025',
+      'location': 'Greenfield Park',
+      'status': 'Registration Open'
     },
     {
-      'imageUrl':
-          'https://images.unsplash.com/photo-1486882430381-e76d701e0a3e',
-      'name': 'Westside Soccer Fields',
-      'sportType': 'Soccer',
-      'pricePerHour': '\$40-60',
-      'rating': 4.5,
-      'distance': '4.8 km'
+      'title': 'Basketball 3v3 Challenge',
+      'date': 'Apr 25, 2025',
+      'location': 'Downtown Arena',
+      'status': 'Ongoing'
     },
     {
-      'imageUrl':
-          'https://images.unsplash.com/photo-1619468129361-605ebea04b44',
-      'name': 'Sunset Volleyball Courts',
-      'sportType': 'Volleyball',
-      'pricePerHour': '\$22-28',
-      'rating': 4.9,
-      'distance': '2.0 km'
+      'title': 'Badminton Friendly',
+      'date': 'May 2, 2025',
+      'location': 'Sunset Courts',
+      'status': 'Upcoming'
     },
   ];
 
@@ -177,66 +173,37 @@ class _HomeViewState extends State<HomeView> {
           body: SafeArea(
             child: RefreshIndicator(
               onRefresh: () async {
-                // Refresh data
                 await vm.refreshData();
               },
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // News Section
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
                       child: Text(
-                        'Find Your Court',
+                        'Latest News',
                         style: GoogleFonts.poppins(
-                          fontSize: 24,
+                          fontSize: 22,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                      child: Text(
-                        'Book a sports facility near you',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(left: 20, bottom: 12),
-                            child: Text(
-                              'Latest News',
-                              style: GoogleFonts.poppins(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 200,
-                            child: PageView.builder(
-                              controller: _pageController,
-                              onPageChanged: (int page) {
-                                setState(() {
-                                  _currentPage = page;
-                                });
-                              },
-                              itemCount: newsItems.length,
-                              itemBuilder: (context, index) {
-                                return _buildNewsItem(newsItems[index]);
-                              },
-                            ),
-                          ),
-                        ],
+                    SizedBox(
+                      height: 200,
+                      child: PageView.builder(
+                        controller: _pageController,
+                        onPageChanged: (int page) {
+                          setState(() {
+                            _currentPage = page;
+                          });
+                        },
+                        itemCount: newsItems.length,
+                        itemBuilder: (context, index) {
+                          return _buildNewsItem(newsItems[index]);
+                        },
                       ),
                     ),
                     Padding(
@@ -255,14 +222,45 @@ class _HomeViewState extends State<HomeView> {
                         ),
                       ),
                     ),
-                    _buildSectionTitle('Sports Categories'),
-                    _buildCategoriesRow(),
-                    _buildSearchAndFilters(),
-                    _buildSectionTitle('Available Courts'),
-                    _buildVenueGrid(),
-                    _buildSectionTitle('Popular Locations'),
-                    _buildPopularLocations(),
-                    const SizedBox(height: 80),
+                    // Reminder Section
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+                      child: Text(
+                        'Reminders',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                        children: reminders
+                            .map((reminder) => _buildReminderCard(reminder))
+                            .toList(),
+                      ),
+                    ),
+                    // Competition Section
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+                      child: Text(
+                        'Internal Competitions',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                        children: competitions
+                            .map((comp) => _buildCompetitionCard(comp))
+                            .toList(),
+                      ),
+                    ),
+                    const SizedBox(height: 40),
                   ],
                 ),
               ),
@@ -307,7 +305,6 @@ class _HomeViewState extends State<HomeView> {
                 ),
               ),
             ),
-
             Positioned.fill(
               child: Container(
                 decoration: BoxDecoration(
@@ -323,7 +320,6 @@ class _HomeViewState extends State<HomeView> {
                 ),
               ),
             ),
-
             Positioned(
               bottom: 20,
               left: 20,
@@ -384,486 +380,91 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          TextButton(
-            onPressed: () {},
-            child: Text(
-              'View All',
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-          ),
-        ],
+  Widget _buildReminderCard(Map<String, String> reminder) {
+    IconData icon;
+    switch (reminder['icon']) {
+      case 'sports_tennis':
+        icon = Icons.sports_tennis;
+        break;
+      case 'credit_card':
+        icon = Icons.credit_card;
+        break;
+      case 'emoji_events':
+        icon = Icons.emoji_events;
+        break;
+      default:
+        icon = Icons.notifications;
+    }
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor:
+              Theme.of(context).colorScheme.primary.withOpacity(0.1),
+          child: Icon(icon, color: Theme.of(context).colorScheme.primary),
+        ),
+        title: Text(
+          reminder['title'] ?? '',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+        ),
+        subtitle: Text(
+          reminder['subtitle'] ?? '',
+          style: GoogleFonts.poppins(fontSize: 13),
+        ),
+        trailing: reminder['type'] == 'Payment'
+            ? Icon(Icons.warning, color: Colors.red)
+            : null,
       ),
     );
   }
 
-  Widget _buildCategoriesRow() {
-    final categories = [
-      {'name': 'Tennis', 'icon': Icons.sports_tennis},
-      {'name': 'Basketball', 'icon': Icons.sports_basketball},
-      {'name': 'Soccer', 'icon': Icons.sports_soccer},
-      {'name': 'Badminton', 'icon': Icons.sports_handball},
-      {'name': 'Volleyball', 'icon': Icons.sports_volleyball},
-    ];
-
-    return SizedBox(
-      height: 100,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('${categories[index]['name']} courts selected'),
-                  duration: const Duration(seconds: 1),
-                ),
-              );
-            },
-            child: Container(
-              width: 80,
-              margin: const EdgeInsets.symmetric(horizontal: 8),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 60,
-                    width: 60,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      categories[index]['icon'] as IconData,
-                      color: Theme.of(context).colorScheme.primary,
-                      size: 30,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    categories[index]['name'] as String,
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildSearchAndFilters() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.search, color: Colors.grey[600]),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'Search for courts, venues...',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color:
-                        Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.tune,
-                    color: Theme.of(context).colorScheme.primary,
-                    size: 20,
-                  ),
-                ),
-              ],
-            ),
+  Widget _buildCompetitionCard(Map<String, String> comp) {
+    Color statusColor;
+    switch (comp['status']) {
+      case 'Registration Open':
+        statusColor = Colors.green;
+        break;
+      case 'Ongoing':
+        statusColor = Colors.orange;
+        break;
+      case 'Upcoming':
+        statusColor = Theme.of(context).colorScheme.primary;
+        break;
+      default:
+        statusColor = Colors.grey;
+    }
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: statusColor.withOpacity(0.1),
+          child: Icon(Icons.emoji_events, color: statusColor),
+        ),
+        title: Text(
+          comp['title'] ?? '',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+        ),
+        subtitle: Text(
+          '${comp['date']} • ${comp['location']}',
+          style: GoogleFonts.poppins(fontSize: 13),
+        ),
+        trailing: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: statusColor.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(12),
           ),
-          const SizedBox(height: 10),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _buildFilterChip('Today'),
-                _buildFilterChip('Available Now'),
-                _buildFilterChip('Highest Rated'),
-                _buildFilterChip('Lowest Price'),
-                _buildFilterChip('Indoor Only'),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFilterChip(String label) {
-    return Container(
-      margin: const EdgeInsets.only(right: 8),
-      child: FilterChip(
-        label: Text(
-          label,
-          style: GoogleFonts.poppins(fontSize: 12),
-        ),
-        selected: false,
-        onSelected: (bool selected) {},
-        backgroundColor: Colors.grey[200],
-        selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-        checkmarkColor: Theme.of(context).colorScheme.primary,
-      ),
-    );
-  }
-
-  Widget _buildVenueGrid() {
-    final displayedVenues = venueData.take(4).toList();
-
-    return Column(
-      children: [
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 0.78,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-          ),
-          itemCount: displayedVenues.length,
-          itemBuilder: (context, index) {
-            return _buildVenueCard(displayedVenues[index]);
-          },
-        ),
-        if (venueData.length > 4)
-          Padding(
-            padding: const EdgeInsets.only(top: 16, bottom: 8),
-            child: TextButton(
-              onPressed: () {},
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'See all ${venueData.length} courts',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Icon(
-                    Icons.arrow_forward,
-                    size: 16,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ],
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildVenueCard(Map<String, dynamic> venue) {
-    return GestureDetector(
-      onTap: () {},
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).brightness == Brightness.dark
-              ? Colors.grey[800]
-              : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
-                  ),
-                  child: CachedNetworkImage(
-                    imageUrl: venue['imageUrl'],
-                    height: 110,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      color: Colors.grey[300],
-                      child: const Center(child: CircularProgressIndicator()),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.error),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black54,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                          size: 14,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          venue['rating'].toString(),
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      venue['name'],
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    _buildInfoRow(
-                      icon: Icons.sports,
-                      text: venue['sportType'],
-                    ),
-                    const SizedBox(height: 4),
-                    _buildInfoRow(
-                      icon: Icons.attach_money,
-                      text: '${venue['pricePerHour']}/hr',
-                    ),
-                    const SizedBox(height: 4),
-                    _buildInfoRow(
-                      icon: Icons.location_on,
-                      text: venue['distance'],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoRow({required IconData icon, required String text}) {
-    return Row(
-      children: [
-        Icon(
-          icon,
-          size: 14,
-          color: Colors.grey[600],
-        ),
-        const SizedBox(width: 4),
-        Expanded(
           child: Text(
-            text,
+            comp['status'] ?? '',
             style: GoogleFonts.poppins(
+              color: statusColor,
+              fontWeight: FontWeight.w600,
               fontSize: 12,
-              color: Colors.grey[600],
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildPopularLocations() {
-    return SizedBox(
-      height: 160,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: venueData.length,
-        itemBuilder: (context, index) {
-          return Container(
-            width: 240,
-            margin: const EdgeInsets.only(right: 16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                // Location image
-                CachedNetworkImage(
-                  imageUrl: venueData[index]['imageUrl'],
-                  fit: BoxFit.cover,
-                ),
-                // Gradient overlay
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.center,
-                        colors: [
-                          Colors.black.withOpacity(0.7),
-                          Colors.transparent,
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                // Location info
-                Positioned(
-                  bottom: 16,
-                  left: 16,
-                  right: 16,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        venueData[index]['name'],
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.sports,
-                            size: 14,
-                            color: Colors.white.withOpacity(0.8),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            venueData[index]['sportType'],
-                            style: GoogleFonts.poppins(
-                              fontSize: 12,
-                              color: Colors.white.withOpacity(0.8),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          const Icon(
-                            Icons.star,
-                            size: 14,
-                            color: Colors.amber,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            venueData[index]['rating'].toString(),
-                            style: GoogleFonts.poppins(
-                              fontSize: 12,
-                              color: Colors.white.withOpacity(0.8),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                // Book now button
-                Positioned(
-                  top: 12,
-                  right: 12,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      'Book Now',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
       ),
     );
   }

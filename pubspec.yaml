@@ -119,6 +119,9 @@ dependencies:
 
   smooth_page_indicator: ^1.1.0
 
+  contacts_service: ^0.6.3
+  permission_handler: ^11.3.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

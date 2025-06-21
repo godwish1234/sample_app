@@ -4,8 +4,6 @@ import 'package:stacked/stacked.dart';
 import 'package:sample_app/services/services.dart';
 
 class HomeViewModel extends BaseViewModel {
-  // firestore
-  static final firestoreService = GetIt.instance.get<FirestoreService>();
   static final notificationService = GetIt.instance.get<NotificationService>();
 
   User? user;
