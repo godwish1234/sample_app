@@ -14,6 +14,16 @@ class ProfileViewModel extends BaseViewModel {
   UserInfo? _userProfile;
   UserInfo? get userProfile => _userProfile;
 
+  bool get isPremiumMember => true;
+
+  void navigateToMembershipUpgrade() {
+    // Navigate to membership upgrade page
+  }
+
+  void navigateToMembershipDetails() {
+    // Navigate to membership management page
+  }
+
   Future<void> initialize() async {
     setBusy(true);
     try {

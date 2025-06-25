@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:sample_app/ui/activities/activities_view.dart';
-import 'package:sample_app/ui/activities/create_booking_view.dart';
+import 'package:sample_app/ui/activities/new_activity/create_activity_view.dart';
 import 'package:sample_app/ui/community/event_view.dart';
 import 'package:stacked/stacked.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -107,7 +107,7 @@ class _ScaffoldViewState extends State<ScaffoldView>
 
     return Container(
       padding: EdgeInsets.only(bottom: bottomPadding),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.transparent,
       ),
       child: Stack(
@@ -215,39 +215,9 @@ class _ScaffoldViewState extends State<ScaffoldView>
   }
 
   void _showAddOptionsBottomSheet(BuildContext context) async {
-    // Instead of showing a bottom sheet, navigate to the booking creation page
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => const CreateBookingView(),
-      ),
-    );
-  }
-
-  Widget _buildOptionItem(
-      BuildContext context, IconData icon, String label, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            height: 60,
-            width: 60,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Icon(
-              icon,
-              color: Theme.of(context).colorScheme.primary,
-              size: 30,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: GoogleFonts.poppins(fontSize: 14),
-          ),
-        ],
+        builder: (context) => const CreateActivityView(),
       ),
     );
   }

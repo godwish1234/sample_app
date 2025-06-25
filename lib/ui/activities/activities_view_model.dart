@@ -71,7 +71,7 @@ class Booking {
   }
 }
 
-class BookingsViewModel extends BaseViewModel {
+class ActivitiesViewModel extends BaseViewModel {
   final _bookingService = GetIt.instance<BookingService>();
   final _navigationService = GetIt.instance<NavigationService>();
 
@@ -309,88 +309,138 @@ class BookingsViewModel extends BaseViewModel {
     final now = DateTime.now();
 
     return [
-      // Host, Public Event
+      // Host, Public Event - Senayan
       Booking(
         id: '1',
-        courtName: 'Downtown Basketball Court',
+        courtName: 'Lapangan Basket Utama Senayan',
         courtImageUrl:
             'https://images.unsplash.com/photo-1619468129361-605ebea04b44',
-        location: 'Downtown Sports Center',
+        location: 'Senayan Sports Complex, Jakarta Pusat',
         startDateTime: now.add(const Duration(days: 2, hours: 3)),
         endDateTime: now.add(const Duration(days: 2, hours: 4)),
         sportType: 'Basketball',
-        price: 35.00,
+        price: 150000.00,
         status: BookingStatus.confirmed,
         isPublicEvent: true,
         isHost: true,
         isCoHost: false,
       ),
-      // Member, Public Event, Co-Host
+      // Member, Public Event, Co-Host - Pondok Indah
       Booking(
         id: '2',
-        courtName: 'Westside Tennis Club',
+        courtName: 'Court Tenis Premium',
         courtImageUrl:
             'https://images.unsplash.com/photo-1562552476-8ac59b2a2e46',
-        location: 'Westside Recreation Area',
+        location: 'Pondok Indah Sports Center, Jakarta Selatan',
         startDateTime: now.subtract(const Duration(days: 3)),
         endDateTime:
             now.subtract(const Duration(days: 3)).add(const Duration(hours: 2)),
         sportType: 'Tennis',
-        price: 45.00,
+        price: 250000.00,
         status: BookingStatus.completed,
         isPublicEvent: true,
         isHost: false,
         isCoHost: true,
       ),
-      // Host, Private Event
+      // Host, Private Event - Kemayoran
       Booking(
         id: '3',
-        courtName: 'Greenfield Badminton Courts',
+        courtName: 'Lapangan Badminton A',
         courtImageUrl:
             'https://images.unsplash.com/photo-1536122985607-4fe00b283652',
-        location: 'Greenfield Community Center',
+        location: 'Kemayoran Sports Hall, Jakarta Pusat',
         startDateTime: now.add(const Duration(days: 1)),
         endDateTime: now.add(const Duration(days: 1, hours: 1, minutes: 30)),
         sportType: 'Badminton',
-        price: 25.00,
+        price: 80000.00,
         status: BookingStatus.pending,
         isPublicEvent: false,
         isHost: true,
         isCoHost: false,
       ),
-      // Member, Private Event
+      // Member, Private Event - BSD
       Booking(
         id: '4',
-        courtName: 'Lakeside Soccer Field',
+        courtName: 'Lapangan Futsal Indoor',
         courtImageUrl:
             'https://images.unsplash.com/photo-1486882430381-e76d701e0a3e',
-        location: 'Lakeside Park',
+        location: 'BSD Sports Arena, Tangerang Selatan',
         startDateTime: now.subtract(const Duration(days: 10)),
         endDateTime: now
             .subtract(const Duration(days: 10))
             .add(const Duration(hours: 2)),
-        sportType: 'Soccer',
-        price: 60.00,
+        sportType: 'Futsal',
+        price: 200000.00,
         status: BookingStatus.cancelled,
         isPublicEvent: false,
         isHost: false,
         isCoHost: false,
       ),
-      // Host, Public Event
+      // Host, Public Event - Rawamangun
       Booking(
         id: '5',
-        courtName: 'Sunset Volleyball Courts',
+        courtName: 'Arena Basket Premium',
         courtImageUrl:
-            'https://images.unsplash.com/photo-1619468129361-605ebea04b44',
-        location: 'Sunset Beach',
+            'https://images.unsplash.com/photo-1574629810360-7efbbe195018',
+        location: 'Rawamangun Sports Complex, Jakarta Timur',
         startDateTime: now.add(const Duration(days: 8)),
         endDateTime: now.add(const Duration(days: 8, hours: 2)),
-        sportType: 'Volleyball',
-        price: 30.00,
+        sportType: 'Basketball',
+        price: 180000.00,
         status: BookingStatus.confirmed,
         isPublicEvent: true,
         isHost: true,
         isCoHost: false,
+      ),
+      // Member, Public Event - Cengkareng
+      Booking(
+        id: '6',
+        courtName: 'Lapangan Serbaguna',
+        courtImageUrl:
+            'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b',
+        location: 'Cengkareng Sports Center, Jakarta Barat',
+        startDateTime: now.add(const Duration(days: 5)),
+        endDateTime: now.add(const Duration(days: 5, hours: 1, minutes: 30)),
+        sportType: 'Volleyball',
+        price: 100000.00,
+        status: BookingStatus.confirmed,
+        isPublicEvent: true,
+        isHost: false,
+        isCoHost: false,
+      ),
+      // Host, Private Event - Kemayoran
+      Booking(
+        id: '7',
+        courtName: 'Lapangan Tenis Outdoor',
+        courtImageUrl:
+            'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6',
+        location: 'Kemayoran Sports Hall, Jakarta Pusat',
+        startDateTime: now.add(const Duration(days: 12)),
+        endDateTime: now.add(const Duration(days: 12, hours: 2)),
+        sportType: 'Tennis',
+        price: 120000.00,
+        status: BookingStatus.confirmed,
+        isPublicEvent: false,
+        isHost: true,
+        isCoHost: false,
+      ),
+      // Member, Public Event - Pondok Indah
+      Booking(
+        id: '8',
+        courtName: 'Lapangan Squash',
+        courtImageUrl:
+            'https://images.unsplash.com/photo-1578662996442-48f60103fc96',
+        location: 'Pondok Indah Sports Center, Jakarta Selatan',
+        startDateTime: now.subtract(const Duration(days: 7)),
+        endDateTime: now
+            .subtract(const Duration(days: 7))
+            .add(const Duration(hours: 1)),
+        sportType: 'Squash',
+        price: 100000.00,
+        status: BookingStatus.completed,
+        isPublicEvent: true,
+        isHost: false,
+        isCoHost: true,
       ),
     ];
   }
