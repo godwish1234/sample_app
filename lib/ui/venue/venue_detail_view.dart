@@ -197,7 +197,7 @@ class _VenueDetailViewState extends State<VenueDetailView> {
                         widget.venue['distance'],
                         style: GoogleFonts.poppins(
                           fontSize: 14,
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -231,7 +231,7 @@ class _VenueDetailViewState extends State<VenueDetailView> {
                                 style: GoogleFonts.poppins(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).primaryColor,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
                               ),
                             ],
@@ -315,7 +315,7 @@ class _VenueDetailViewState extends State<VenueDetailView> {
                           feature,
                           style: GoogleFonts.poppins(
                             fontSize: 12,
-                            color: Theme.of(context).primaryColor,
+                            color: Theme.of(context).colorScheme.primary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -350,7 +350,8 @@ class _VenueDetailViewState extends State<VenueDetailView> {
                             children: [
                               CircleAvatar(
                                 radius: 16,
-                                backgroundColor: Theme.of(context).primaryColor,
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
                                 child: Text(
                                   review['name'][0],
                                   style: GoogleFonts.poppins(
@@ -447,7 +448,7 @@ class _VenueDetailViewState extends State<VenueDetailView> {
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Theme.of(context).primaryColor,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ),
@@ -465,7 +466,7 @@ class _VenueDetailViewState extends State<VenueDetailView> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(

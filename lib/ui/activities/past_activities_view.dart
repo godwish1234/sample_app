@@ -317,7 +317,7 @@ class _PastActivitiesViewState extends State<PastActivitiesView> {
                             child: Icon(
                               Icons.sports_basketball,
                               size: 16,
-                              color: Theme.of(context).primaryColor,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -371,7 +371,7 @@ class _PastActivitiesViewState extends State<PastActivitiesView> {
                         style: GoogleFonts.poppins(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                     ],

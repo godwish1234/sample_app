@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
+import 'package:sample_app/constants/color.dart';
 import 'package:sample_app/enums/language.dart';
 import 'package:sample_app/firebase_options.dart';
 import 'package:sample_app/initialization/sample_app_init.dart';
@@ -113,7 +114,8 @@ class _SampleAppState extends State<SampleApp> {
 
   @override
   Widget build(BuildContext context) {
-    ColorScheme appColors = ColorScheme.fromSeed(seedColor: Color(0xFF0b39a7));
+    ColorScheme appColors =
+        ColorScheme.fromSeed(seedColor: AppColors.primaryColor);
 
     return MultiProvider(
       providers: [
@@ -137,7 +139,10 @@ class _SampleAppState extends State<SampleApp> {
               // themeMode: value.mode,
               theme: ThemeData(
                 useMaterial3: false,
-                colorScheme: appColors, //<--this
+                colorScheme: ColorScheme.fromSeed(
+                  seedColor: AppColors.primaryColor,
+                  primary: AppColors.primaryColor,
+                ),
                 textTheme: TextTheme(
                     titleLarge:
                         TextStyle(color: appColors.primary)), //<--and this

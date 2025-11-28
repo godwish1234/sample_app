@@ -339,7 +339,7 @@ class _ProfileViewState extends State<ProfileView> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Theme.of(context).primaryColor,
+              Theme.of(context).colorScheme.primary,
               Theme.of(context).primaryColor.withOpacity(0.8),
             ],
           ),
@@ -407,7 +407,7 @@ class _ProfileViewState extends State<ProfileView> {
                 onPressed: () => vm.navigateToMembershipUpgrade(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
-                  foregroundColor: Theme.of(context).primaryColor,
+                  foregroundColor: Theme.of(context).colorScheme.primary,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -475,7 +475,7 @@ class _ProfileViewState extends State<ProfileView> {
                 child: Text(
                   "View All",
                   style: GoogleFonts.poppins(
-                    color: Theme.of(context).primaryColor,
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -574,7 +574,7 @@ class _ProfileViewState extends State<ProfileView> {
             trailing: Switch(
               value: isDarkMode,
               onChanged: (_) => vm.toggleThemeMode(),
-              activeColor: Theme.of(context).primaryColor,
+              activeColor: Theme.of(context).colorScheme.primary,
             ),
           ),
         ],
@@ -597,8 +597,8 @@ class _ProfileViewState extends State<ProfileView> {
                 color: Theme.of(context).primaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child:
-                  Icon(icon, color: Theme.of(context).primaryColor, size: 20),
+              child: Icon(icon,
+                  color: Theme.of(context).colorScheme.primary, size: 20),
             ),
             const SizedBox(width: 16),
             Expanded(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:sample_app/ui/activities/new_activity/create_activity_view.dart';
+import 'package:sample_app/ui/activities/new_activity/create_activity_view_model.dart';
 import 'package:sample_app/ui/payment/payment.dart';
 
 class ActivitySummaryView extends StatelessWidget {
@@ -57,10 +57,13 @@ class ActivitySummaryView extends StatelessWidget {
               icon: Icons.event,
               children: [
                 _buildSummaryRow('Event Name', eventName),
-                _buildSummaryRow('Type', isPublic ? 'Public Event' : 'Private Event'),
-                if (isPublic) _buildSummaryRow('People Limit', '$peopleLimit people'),
-                if (invitedPhones.isNotEmpty) 
-                  _buildSummaryRow('Invited Friends', '${invitedPhones.length} contacts'),
+                _buildSummaryRow(
+                    'Type', isPublic ? 'Public Event' : 'Private Event'),
+                if (isPublic)
+                  _buildSummaryRow('People Limit', '$peopleLimit people'),
+                if (invitedPhones.isNotEmpty)
+                  _buildSummaryRow(
+                      'Invited Friends', '${invitedPhones.length} contacts'),
               ],
             ),
             const SizedBox(height: 16),
@@ -73,7 +76,8 @@ class ActivitySummaryView extends StatelessWidget {
                 _buildSummaryRow('Location', selectedLocation),
                 _buildSummaryRow('Court', selectedCourt),
                 _buildSummaryRow('Sport', courtData.sport),
-                _buildSummaryRow('Rate', '\$${courtData.pricePerHour.toStringAsFixed(0)}/hour'),
+                _buildSummaryRow('Rate',
+                    '\$${courtData.pricePerHour.toStringAsFixed(0)}/hour'),
               ],
             ),
             const SizedBox(height: 16),
@@ -83,28 +87,31 @@ class ActivitySummaryView extends StatelessWidget {
               title: 'Schedule',
               icon: Icons.schedule,
               children: [
-                _buildSummaryRow('Duration', '${selectedTimeSlots.length} hour(s)'),
+                _buildSummaryRow(
+                    'Duration', '${selectedTimeSlots.length} hour(s)'),
                 const SizedBox(height: 8),
-                ...selectedTimeSlots.map((slot) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: courtData.color,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        '${DateFormat('EEE, MMM d').format(slot.date)} at ${slot.time.format(context)}',
-                        style: GoogleFonts.poppins(fontSize: 14),
-                      ),
-                    ],
-                  ),
-                )).toList(),
+                ...selectedTimeSlots
+                    .map((slot) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 2),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: courtData.color,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                '${DateFormat('EEE, MMM d').format(slot.date)} at ${slot.time.format(context)}',
+                                style: GoogleFonts.poppins(fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        ))
+                    .toList(),
               ],
             ),
             const SizedBox(height: 16),
@@ -118,20 +125,25 @@ class ActivitySummaryView extends StatelessWidget {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: invitedPhones.map((phone) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        phone,
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    )).toList(),
+                    children: invitedPhones
+                        .map((phone) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .primaryColor
+                                    .withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                phone,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ))
+                        .toList(),
                   ),
                 ],
               ),
@@ -155,7 +167,7 @@ class ActivitySummaryView extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),

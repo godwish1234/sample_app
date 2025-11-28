@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sample_app/ui/activities/new_activity/activity_summary_view.dart';
-import 'package:sample_app/ui/activities/new_activity/create_activity_view.dart';
+import 'package:sample_app/ui/activities/new_activity/create_activity_view_model.dart';
 
 class EventDetailsView extends StatefulWidget {
   final String selectedLocation;
@@ -174,7 +174,7 @@ class _EventDetailsViewState extends State<EventDetailsView> {
                             '$peopleLimit people',
                             style: GoogleFonts.poppins(
                               fontWeight: FontWeight.bold,
-                              color: Theme.of(context).primaryColor,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ),
@@ -199,7 +199,7 @@ class _EventDetailsViewState extends State<EventDetailsView> {
                             peopleLimit = val.round();
                           });
                         },
-                        activeColor: Theme.of(context).primaryColor,
+                        activeColor: Theme.of(context).colorScheme.primary,
                         inactiveColor:
                             Theme.of(context).primaryColor.withOpacity(0.2),
                       ),
@@ -239,7 +239,7 @@ class _EventDetailsViewState extends State<EventDetailsView> {
                       const SizedBox(width: 8),
                       Container(
                         decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).colorScheme.primary,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: IconButton(
@@ -348,7 +348,7 @@ class _EventDetailsViewState extends State<EventDetailsView> {
                       }
                     : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -450,7 +450,9 @@ class _EventDetailsViewState extends State<EventDetailsView> {
           children: [
             Icon(
               icon,
-              color: isSelected ? Colors.white : Theme.of(context).primaryColor,
+              color: isSelected
+                  ? Colors.white
+                  : Theme.of(context).colorScheme.primary,
             ),
             const SizedBox(height: 8),
             Text(

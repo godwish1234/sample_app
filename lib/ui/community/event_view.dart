@@ -203,7 +203,7 @@ class _EventViewState extends State<EventView> {
             onPressed: () {
               // Navigate to create event
             },
-            backgroundColor: Theme.of(context).primaryColor,
+            backgroundColor: Theme.of(context).colorScheme.primary,
             icon: const Icon(Icons.add),
             label: Text(
               'Create Event',
@@ -342,7 +342,7 @@ class _EventViewState extends State<EventView> {
                             style: GoogleFonts.poppins(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
-                              color: Theme.of(context).primaryColor,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ],
@@ -489,7 +489,7 @@ class _EventViewState extends State<EventView> {
                                 style: GoogleFonts.poppins(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).primaryColor,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
                               ),
                             ],
@@ -569,7 +569,7 @@ class _EventViewState extends State<EventView> {
               });
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).primaryColor,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),

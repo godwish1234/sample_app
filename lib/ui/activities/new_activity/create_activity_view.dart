@@ -2,460 +2,208 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:sample_app/ui/activities/new_activity/event_details_view.dart';
+import 'package:stacked/stacked.dart';
+import 'create_activity_view_model.dart';
 
-class CreateActivityView extends StatefulWidget {
+class CreateActivityView extends StatelessWidget {
   const CreateActivityView({super.key});
 
-  @override
-  State<CreateActivityView> createState() => _CreateActivityViewState();
-}
-
-class _CreateActivityViewState extends State<CreateActivityView>
-    with TickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-
-  String? selectedLocation;
-  String? selectedCourt;
-  Map<String, TimeSlot> selectedTimeSlots = {};
-  double totalPrice = 0.0;
-  DateTime selectedDate = DateTime.now();
-  final PageController _datePageController = PageController();
-
-  // Location data
-  final List<LocationOption> locations = [
-    LocationOption(
-      name: 'Senayan Sports Complex',
-      address: 'Jl. Pintu Satu Senayan, Jakarta Pusat',
-      distance: '2.1 km',
-      city: 'Jakarta Pusat',
-      icon: Icons.location_city,
-      imageUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b',
-    ),
-    LocationOption(
-      name: 'Pondok Indah Sports Center',
-      address: 'Jl. Metro Pondok Indah, Jakarta Selatan',
-      distance: '5.3 km',
-      city: 'Jakarta Selatan',
-      icon: Icons.sports_tennis,
-      imageUrl: 'https://images.unsplash.com/photo-1544965503-7ad531123fcf',
-    ),
-    LocationOption(
-      name: 'Kemayoran Sports Hall',
-      address: 'Jl. Benyamin Sueb, Jakarta Utara',
-      distance: '3.8 km',
-      city: 'Jakarta Utara',
-      icon: Icons.sports_basketball,
-      imageUrl: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018',
-    ),
-    LocationOption(
-      name: 'Cengkareng Sports Center',
-      address: 'Jl. Kamal Raya, Jakarta Barat',
-      distance: '12.5 km',
-      city: 'Jakarta Barat',
-      icon: Icons.sports_volleyball,
-      imageUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b',
-    ),
-    LocationOption(
-      name: 'Rawamangun Sports Complex',
-      address: 'Jl. Pemuda, Jakarta Timur',
-      distance: '8.7 km',
-      city: 'Jakarta Timur',
-      icon: Icons.sports_soccer,
-      imageUrl: 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6',
-    ),
-    LocationOption(
-      name: 'BSD Sports Arena',
-      address: 'Jl. BSD Raya, Tangerang Selatan',
-      distance: '18.2 km',
-      city: 'Tangerang Selatan',
-      icon: Icons.sports,
-      imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96',
-    ),
-  ];
-
-  // Courts data by location
-  final Map<String, List<CourtOption>> courtsByLocation = {
-    'Senayan Sports Complex': [
-      CourtOption(
-        name: 'Lapangan Basket Utama',
-        sport: 'Basketball',
-        pricePerHour: 150000.0,
-        icon: Icons.sports_basketball,
-        color: Colors.orange,
-        isAvailable: true,
-        imageUrl:
-            'https://images.unsplash.com/photo-1574629810360-7efbbe195018',
-        description: 'Lapangan basket indoor dengan lantai kayu profesional',
-      ),
-      CourtOption(
-        name: 'Lapangan Tenis Outdoor',
-        sport: 'Tennis',
-        pricePerHour: 200000.0,
-        icon: Icons.sports_tennis,
-        color: Colors.green,
-        isAvailable: true,
-        imageUrl: 'https://images.unsplash.com/photo-1544965503-7ad531123fcf',
-        description:
-            'Lapangan tenis outdoor dengan permukaan keras berkualitas',
-      ),
-      CourtOption(
-        name: 'Lapangan Voli Indoor',
-        sport: 'Volleyball',
-        pricePerHour: 120000.0,
-        icon: Icons.sports_volleyball,
-        color: Colors.purple,
-        isAvailable: false,
-        imageUrl:
-            'https://images.unsplash.com/photo-1594736797933-d0d4319e4d11',
-        description: 'Lapangan voli indoor dengan net standar internasional',
-      ),
-    ],
-    'Pondok Indah Sports Center': [
-      CourtOption(
-        name: 'Court Tenis Premium',
-        sport: 'Tennis',
-        pricePerHour: 250000.0,
-        icon: Icons.sports_tennis,
-        color: Colors.green,
-        isAvailable: true,
-        imageUrl:
-            'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6',
-        description: 'Lapangan tenis clay dengan lampu penerangan untuk malam',
-      ),
-      CourtOption(
-        name: 'Lapangan Badminton A',
-        sport: 'Badminton',
-        pricePerHour: 80000.0,
-        icon: Icons.sports,
-        color: Colors.red,
-        isAvailable: true,
-        imageUrl:
-            'https://images.unsplash.com/photo-1578662996442-48f60103fc96',
-        description: 'Lapangan badminton indoor dengan lantai kayu',
-      ),
-      CourtOption(
-        name: 'Lapangan Squash',
-        sport: 'Squash',
-        pricePerHour: 100000.0,
-        icon: Icons.sports_tennis,
-        color: Colors.blue,
-        isAvailable: true,
-        imageUrl:
-            'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b',
-        description: 'Lapangan squash dengan dinding kaca transparan',
-      ),
-    ],
-    'Kemayoran Sports Hall': [
-      CourtOption(
-        name: 'Arena Basket Utama',
-        sport: 'Basketball',
-        pricePerHour: 180000.0,
-        icon: Icons.sports_basketball,
-        color: Colors.orange,
-        isAvailable: true,
-        imageUrl: 'https://images.unsplash.com/photo-1546519638-68e109498ffc',
-        description: 'Arena basket indoor dengan tribun penonton',
-      ),
-      CourtOption(
-        name: 'Lapangan Futsal',
-        sport: 'Futsal',
-        pricePerHour: 200000.0,
-        icon: Icons.sports_soccer,
-        color: Colors.blue,
-        isAvailable: true,
-        imageUrl:
-            'https://images.unsplash.com/photo-1574629810360-7efbbe195018',
-        description: 'Lapangan futsal indoor dengan rumput sintetis',
-      ),
-    ],
-    'Cengkareng Sports Center': [
-      CourtOption(
-        name: 'Lapangan Serbaguna',
-        sport: 'Multi-sport',
-        pricePerHour: 100000.0,
-        icon: Icons.sports,
-        color: Colors.indigo,
-        isAvailable: true,
-        imageUrl:
-            'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b',
-        description:
-            'Lapangan serbaguna untuk basket, voli, dan olahraga lainnya',
-      ),
-      CourtOption(
-        name: 'Lapangan Bulu Tangkis',
-        sport: 'Badminton',
-        pricePerHour: 70000.0,
-        icon: Icons.sports,
-        color: Colors.red,
-        isAvailable: true,
-        imageUrl:
-            'https://images.unsplash.com/photo-1578662996442-48f60103fc96',
-        description: 'Lapangan badminton dengan 4 court paralel',
-      ),
-    ],
-    'Rawamangun Sports Complex': [
-      CourtOption(
-        name: 'Lapangan Sepak Bola',
-        sport: 'Football',
-        pricePerHour: 300000.0,
-        icon: Icons.sports_soccer,
-        color: Colors.green,
-        isAvailable: true,
-        imageUrl:
-            'https://images.unsplash.com/photo-1574629810360-7efbbe195018',
-        description: 'Lapangan sepak bola outdoor dengan rumput alami',
-      ),
-      CourtOption(
-        name: 'Lapangan Atletik',
-        sport: 'Athletics',
-        pricePerHour: 150000.0,
-        icon: Icons.directions_run,
-        color: Colors.orange,
-        isAvailable: true,
-        imageUrl:
-            'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b',
-        description: 'Track atletik 400m dengan fasilitas lompat',
-      ),
-    ],
-    'BSD Sports Arena': [
-      CourtOption(
-        name: 'Court Tenis Modern',
-        sport: 'Tennis',
-        pricePerHour: 220000.0,
-        icon: Icons.sports_tennis,
-        color: Colors.green,
-        isAvailable: true,
-        imageUrl:
-            'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6',
-        description: 'Lapangan tenis modern dengan fasilitas lengkap',
-      ),
-      CourtOption(
-        name: 'Arena Basket Premium',
-        sport: 'Basketball',
-        pricePerHour: 200000.0,
-        icon: Icons.sports_basketball,
-        color: Colors.orange,
-        isAvailable: true,
-        imageUrl:
-            'https://images.unsplash.com/photo-1574629810360-7efbbe195018',
-        description: 'Arena basket premium dengan AC dan sound system',
-      ),
-    ],
-  };
-
-  // Time slots for the next 7 days
-  List<DateTime> get availableDates {
-    return List.generate(
-        365, (index) => DateTime.now().add(Duration(days: index)));
-  }
-
-  List<DateTime> get visibleDates {
-    int daysSinceToday = selectedDate.difference(DateTime.now()).inDays;
-    return List.generate(7,
-        (index) => DateTime.now().add(Duration(days: daysSinceToday + index)));
-  }
-
-  List<TimeOfDay> get availableTimeSlots {
-    return [
-      const TimeOfDay(hour: 6, minute: 0),
-      const TimeOfDay(hour: 7, minute: 0),
-      const TimeOfDay(hour: 8, minute: 0),
-      const TimeOfDay(hour: 9, minute: 0),
-      const TimeOfDay(hour: 10, minute: 0),
-      const TimeOfDay(hour: 11, minute: 0),
-      const TimeOfDay(hour: 12, minute: 0),
-      const TimeOfDay(hour: 13, minute: 0),
-      const TimeOfDay(hour: 14, minute: 0),
-      const TimeOfDay(hour: 15, minute: 0),
-      const TimeOfDay(hour: 16, minute: 0),
-      const TimeOfDay(hour: 17, minute: 0),
-      const TimeOfDay(hour: 18, minute: 0),
-      const TimeOfDay(hour: 19, minute: 0),
-      const TimeOfDay(hour: 20, minute: 0),
-      const TimeOfDay(hour: 21, minute: 0),
-    ];
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-    _animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    _datePageController.dispose();
-    super.dispose();
-  }
-
-  void _showDatePicker() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: Theme.of(context).primaryColor,
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: Colors.black,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
+  // Helper to convert string icon names to IconData
+  IconData _getIconFromString(String iconName) {
+    switch (iconName) {
+      case 'location_city':
+        return Icons.location_city;
+      case 'sports_tennis':
+        return Icons.sports_tennis;
+      case 'sports_basketball':
+        return Icons.sports_basketball;
+      case 'sports_volleyball':
+        return Icons.sports_volleyball;
+      case 'sports_soccer':
+        return Icons.sports_soccer;
+      case 'sports':
+        return Icons.sports;
+      case 'directions_run':
+        return Icons.directions_run;
+      default:
+        return Icons.sports;
     }
-  }
-
-  void _navigateToNextWeek() {
-    setState(() {
-      selectedDate = selectedDate.add(const Duration(days: 7));
-    });
-  }
-
-  void _navigateToPreviousWeek() {
-    final previousWeek = selectedDate.subtract(const Duration(days: 7));
-    if (previousWeek
-        .isAfter(DateTime.now().subtract(const Duration(days: 1)))) {
-      setState(() {
-        selectedDate = previousWeek;
-      });
-    }
-  }
-
-  void _updateTotalPrice() {
-    final selectedCourtData = _getSelectedCourtData();
-    if (selectedCourtData != null) {
-      totalPrice = selectedTimeSlots.length * selectedCourtData.pricePerHour;
-    } else {
-      totalPrice = 0.0;
-    }
-  }
-
-  CourtOption? _getSelectedCourtData() {
-    if (selectedLocation == null || selectedCourt == null) return null;
-    return courtsByLocation[selectedLocation!]
-        ?.firstWhere((court) => court.name == selectedCourt);
-  }
-
-  void _toggleTimeSlot(DateTime date, TimeOfDay time) {
-    final key =
-        '${DateFormat('yyyy-MM-dd').format(date)}_${time.hour}:${time.minute}';
-    setState(() {
-      if (selectedTimeSlots.containsKey(key)) {
-        selectedTimeSlots.remove(key);
-      } else {
-        selectedTimeSlots[key] = TimeSlot(date: date, time: time);
-      }
-      _updateTotalPrice();
-    });
-  }
-
-  bool _isTimeSlotSelected(DateTime date, TimeOfDay time) {
-    final key =
-        '${DateFormat('yyyy-MM-dd').format(date)}_${time.hour}:${time.minute}';
-    return selectedTimeSlots.containsKey(key);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: CustomScrollView(
-        slivers: [
-          // Modern App Bar
-          SliverAppBar(
-            expandedHeight: 120,
-            pinned: true,
-            backgroundColor: Theme.of(context).primaryColor,
-            elevation: 0,
-            leading: Container(
-              margin: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ),
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                'Select Court & Time',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+    return ViewModelBuilder<CreateActivityViewModel>.reactive(
+      viewModelBuilder: () => CreateActivityViewModel(),
+      onViewModelReady: (vm) => vm.initialize(),
+      builder: (context, vm, child) {
+        return Scaffold(
+          backgroundColor: Colors.grey[50],
+          body: CustomScrollView(
+            slivers: [
+              // Modern App Bar
+              SliverAppBar(
+                expandedHeight: 80,
+                pinned: true,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                elevation: 0,
+                leading: Container(
+                  margin: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+                flexibleSpace: FlexibleSpaceBar(
+                  title: Text(
+                    'Select Court & Time',
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                  background: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Theme.of(context).colorScheme.primary,
+                          Theme.of(context).primaryColor.withOpacity(0.8),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Theme.of(context).primaryColor,
-                      Theme.of(context).primaryColor.withOpacity(0.8),
+              // Content
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      _buildLocationSection(context, vm),
+                      const SizedBox(height: 20),
+                      if (vm.selectedLocation != null) ...[
+                        _buildCourtSection(context, vm),
+                        const SizedBox(height: 20),
+                      ],
+                      if (vm.selectedCourt != null) ...[
+                        _buildDateTimeGrid(context, vm),
+                        const SizedBox(height: 30),
+                      ],
+                      if (vm.selectedTimeSlots.isNotEmpty) ...[
+                        _buildPriceSummary(context, vm),
+                        const SizedBox(height: 20),
+                        _buildContinueButton(context, vm),
+                      ],
+                      const SizedBox(height: 30),
                     ],
                   ),
                 ),
               ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLocationSection(
+      BuildContext context, CreateActivityViewModel vm) {
+    final locationsToShow = vm.isLocationCollapsed &&
+            vm.selectedLocation != null
+        ? vm.locations.where((loc) => loc.name == vm.selectedLocation).toList()
+        : vm.locations;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.black.withOpacity(0.06)),
+        boxShadow: null,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Flat Header
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.location_on,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Choose Location',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      Text(
+                        'Select your preferred venue',
+                        style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (vm.isLocationCollapsed)
+                  IconButton(
+                    icon: Icon(Icons.edit_outlined,
+                        size: 20, color: Theme.of(context).primaryColor),
+                    onPressed: () => vm.toggleLocationCollapse(),
+                    tooltip: 'Change location',
+                  ),
+              ],
             ),
           ),
           // Content
-          SliverToBoxAdapter(
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    // Location Selection
-                    _buildLocationSection(),
-                    const SizedBox(height: 20),
-
-                    // Court Selection (only show if location is selected)
-                    if (selectedLocation != null) ...[
-                      _buildCourtSection(),
-                      const SizedBox(height: 20),
-                    ],
-
-                    // Date & Time Grid (only show if court is selected)
-                    if (selectedCourt != null) ...[
-                      _buildDateTimeGrid(),
-                      const SizedBox(height: 30),
-                    ],
-
-                    // Total Price & Continue Button
-                    if (selectedTimeSlots.isNotEmpty) ...[
-                      _buildPriceSummary(),
-                      const SizedBox(height: 20),
-                      _buildContinueButton(),
-                    ],
-
-                    const SizedBox(height: 30),
-                  ],
-                ),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: vm.isLocationCollapsed ? 1 : 2,
+                crossAxisSpacing: 14,
+                mainAxisSpacing: 14,
+                childAspectRatio: vm.isLocationCollapsed ? 4.5 : 0.88,
               ),
+              itemCount: locationsToShow.length,
+              itemBuilder: (context, index) {
+                return _buildLocationCard(context, vm, locationsToShow[index]);
+              },
             ),
           ),
         ],
@@ -463,19 +211,838 @@ class _CreateActivityViewState extends State<CreateActivityView>
     );
   }
 
-  Widget _buildLocationSection() {
+  Widget _buildLocationCard(BuildContext context, CreateActivityViewModel vm,
+      LocationOption location) {
+    final isSelected = vm.selectedLocation == location.name;
+
+    return GestureDetector(
+      onTap: () => vm.selectLocation(location.name),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        decoration: BoxDecoration(
+          gradient: isSelected
+              ? LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Theme.of(context).primaryColor.withOpacity(0.15),
+                    Theme.of(context).primaryColor.withOpacity(0.05),
+                  ],
+                )
+              : null,
+          color: isSelected ? null : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color:
+                isSelected ? Theme.of(context).primaryColor : Colors.grey[200]!,
+            width: isSelected ? 2.5 : 1.5,
+          ),
+          boxShadow: null,
+        ),
+        child: vm.isLocationCollapsed && isSelected
+            ? _buildCollapsedLocationContent(context, location)
+            : _buildExpandedLocationContent(context, location, isSelected),
+      ),
+    );
+  }
+
+  Widget _buildCollapsedLocationContent(
+      BuildContext context, LocationOption location) {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).primaryColor.withOpacity(0.8),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              _getIconFromString(location.icon),
+              color: Colors.white,
+              size: 16,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  location.name,
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                    color: Colors.black87,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.location_city,
+                      size: 11,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 3),
+                    Text(
+                      location.city,
+                      style: GoogleFonts.poppins(
+                        fontSize: 10,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Icon(
+                      Icons.directions_walk,
+                      size: 11,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 3),
+                    Text(
+                      location.distance,
+                      style: GoogleFonts.poppins(
+                        fontSize: 10,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.check,
+              color: Colors.white,
+              size: 14,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildExpandedLocationContent(
+      BuildContext context, LocationOption location, bool isSelected) {
+    return Column(
+      children: [
+        // Location Image
+        Expanded(
+          flex: 2,
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+            child: Stack(
+              children: [
+                CachedNetworkImage(
+                  imageUrl: location.imageUrl,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.grey[200]!,
+                          Colors.grey[300]!,
+                        ],
+                      ),
+                    ),
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.error),
+                  ),
+                ),
+                // Gradient overlay
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.3),
+                      ],
+                    ),
+                  ),
+                ),
+                // City badge with gradient
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Theme.of(context).primaryColor.withOpacity(0.9),
+                          Theme.of(context).primaryColor.withOpacity(0.7),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.location_city,
+                          size: 10,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          location.city,
+                          style: GoogleFonts.poppins(
+                            fontSize: 9,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // Selected checkmark overlay
+                if (isSelected)
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                        shape: BoxShape.circle,
+                        boxShadow: null,
+                      ),
+                      child: const Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 14,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        // Location Details
+        Expanded(
+          flex: 2,
+          child: Padding(
+            padding: const EdgeInsets.all(6),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Name with icon
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        gradient: isSelected
+                            ? LinearGradient(
+                                colors: [
+                                  Theme.of(context).colorScheme.primary,
+                                  Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.8),
+                                ],
+                              )
+                            : null,
+                        color: isSelected ? null : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Icon(
+                        _getIconFromString(location.icon),
+                        color: Colors.white,
+                        size: 10,
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Expanded(
+                      child: Text(
+                        location.name,
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 10,
+                          color: Colors.black87,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                // Address
+                Row(
+                  children: [
+                    Icon(
+                      Icons.location_on_outlined,
+                      size: 9,
+                      color: Colors.grey[500],
+                    ),
+                    const SizedBox(width: 3),
+                    Expanded(
+                      child: Text(
+                        location.address,
+                        style: GoogleFonts.poppins(
+                          fontSize: 7,
+                          color: Colors.grey[600],
+                          height: 1.1,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                // Distance badge
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Theme.of(context).primaryColor.withOpacity(0.15),
+                        Theme.of(context).primaryColor.withOpacity(0.08),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: Theme.of(context).primaryColor.withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.directions_walk,
+                        size: 9,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        location.distance,
+                        style: GoogleFonts.poppins(
+                          fontSize: 8,
+                          fontWeight: FontWeight.w700,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCourtSection(BuildContext context, CreateActivityViewModel vm) {
+    final courts = vm.courtsForSelectedLocation;
+
+    final courtsToShow = vm.isCourtCollapsed && vm.selectedCourt != null
+        ? courts.where((court) => court.name == vm.selectedCourt).toList()
+        : courts;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.black.withOpacity(0.06)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Flat Header
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.sports_tennis,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Choose Court',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      Text(
+                        'Pick your favorite court type',
+                        style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (vm.isCourtCollapsed)
+                  IconButton(
+                    icon: Icon(Icons.edit_outlined,
+                        size: 20, color: Theme.of(context).primaryColor),
+                    onPressed: () => vm.toggleCourtCollapse(),
+                    tooltip: 'Change court',
+                  ),
+              ],
+            ),
+          ),
+          // Content
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: courtsToShow
+                  .map((court) => Padding(
+                        padding: const EdgeInsets.only(bottom: 14),
+                        child: _buildCourtCard(context, vm, court),
+                      ))
+                  .toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCourtCard(
+      BuildContext context, CreateActivityViewModel vm, CourtOption court) {
+    final isSelected = vm.selectedCourt == court.name;
+
+    return GestureDetector(
+      onTap: court.isAvailable ? () => vm.selectCourt(court.name) : null,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        decoration: BoxDecoration(
+          gradient: !court.isAvailable
+              ? null
+              : isSelected
+                  ? LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Theme.of(context).primaryColor.withOpacity(0.15),
+                        Theme.of(context).primaryColor.withOpacity(0.05),
+                      ],
+                    )
+                  : null,
+          color: !court.isAvailable
+              ? Colors.grey[200]
+              : isSelected
+                  ? null
+                  : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: !court.isAvailable
+                ? Colors.grey[400]!
+                : isSelected
+                    ? Theme.of(context).primaryColor
+                    : Colors.grey[200]!,
+            width: isSelected ? 2.5 : 1.5,
+          ),
+          boxShadow: null,
+        ),
+        child: Opacity(
+          opacity: court.isAvailable ? 1.0 : 0.5,
+          child: vm.isCourtCollapsed && isSelected
+              ? _buildCollapsedCourtContent(context, vm, court)
+              : _buildExpandedCourtContent(context, vm, court, isSelected),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCollapsedCourtContent(
+      BuildContext context, CreateActivityViewModel vm, CourtOption court) {
+    return Padding(
+      padding: const EdgeInsets.all(14),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).primaryColor.withOpacity(0.8),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: null,
+            ),
+            child: Icon(
+              _getIconFromString(court.icon),
+              color: Colors.white,
+              size: 18,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  court.name,
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.sports,
+                      size: 12,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      court.sport,
+                      style: GoogleFonts.poppins(
+                        fontSize: 11,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(
+                      Icons.payments_outlined,
+                      size: 12,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Rp${NumberFormat('#,###', 'id_ID').format(court.pricePerHour)}/jam',
+                      style: GoogleFonts.poppins(
+                        fontSize: 11,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.check,
+              color: Colors.white,
+              size: 16,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildExpandedCourtContent(BuildContext context,
+      CreateActivityViewModel vm, CourtOption court, bool isSelected) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          // Court Image with overlay
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: CachedNetworkImage(
+                  imageUrl: court.imageUrl,
+                  width: 90,
+                  height: 90,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.grey[200]!,
+                          Colors.grey[300]!,
+                        ],
+                      ),
+                    ),
+                    child: const Center(
+                        child: CircularProgressIndicator(strokeWidth: 2)),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.error),
+                  ),
+                ),
+              ),
+              // Gradient overlay
+              Container(
+                width: 90,
+                height: 90,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.3),
+                    ],
+                  ),
+                ),
+              ),
+              // Selected indicator
+              if (isSelected)
+                Positioned(
+                  top: 6,
+                  right: 6,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      shape: BoxShape.circle,
+                      boxShadow: null,
+                    ),
+                    child: const Icon(
+                      Icons.check,
+                      color: Colors.white,
+                      size: 14,
+                    ),
+                  ),
+                ),
+              // Availability badge
+              if (court.isAvailable)
+                Positioned(
+                  bottom: 6,
+                  left: 6,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.green.shade400,
+                          Colors.green.shade600,
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(6),
+                      boxShadow: null,
+                    ),
+                    child: Text(
+                      'Available',
+                      style: GoogleFonts.poppins(
+                        fontSize: 8,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(width: 16),
+          // Court Details
+          // Header with icon and name
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(7),
+                      decoration: BoxDecoration(
+                        gradient: isSelected
+                            ? LinearGradient(
+                                colors: [
+                                  Theme.of(context).colorScheme.primary,
+                                  Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.8),
+                                ],
+                              )
+                            : null,
+                        color: isSelected ? null : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: null,
+                      ),
+                      child: Icon(
+                        _getIconFromString(court.icon),
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        court.name,
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                          color: Colors.black87,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                // Sport type with icon
+                Row(
+                  children: [
+                    Icon(
+                      Icons.sports,
+                      size: 14,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      court.sport,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: Colors.grey[700],
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                // Description
+                const SizedBox(height: 4),
+                Text(
+                  court.description,
+                  style: GoogleFonts.poppins(
+                    fontSize: 10,
+                    height: 1.3,
+                    color: Colors.grey[500],
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 8),
+                // Price badge with gradient
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Theme.of(context).primaryColor.withOpacity(0.15),
+                        Theme.of(context).primaryColor.withOpacity(0.08),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Theme.of(context).primaryColor.withOpacity(0.3),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.payments,
+                        size: 14,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Rp${NumberFormat('#,###', 'id_ID').format(court.pricePerHour)}',
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      Text(
+                        '/jam',
+                        style: GoogleFonts.poppins(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                          color:
+                              Theme.of(context).primaryColor.withOpacity(0.8),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDateTimeGrid(BuildContext context, CreateActivityViewModel vm) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
+        border: Border.all(color: Colors.black.withOpacity(0.06)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -483,197 +1050,185 @@ class _CreateActivityViewState extends State<CreateActivityView>
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(Icons.location_on,
-                    color: Theme.of(context).primaryColor),
+                child: Icon(Icons.calendar_today,
+                    color: Theme.of(context).colorScheme.primary, size: 20),
               ),
-              const SizedBox(width: 12),
-              Text(
-                'Choose Location',
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Choose Date & Time',
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    Text(
+                      'Select your preferred schedule',
+                      style: GoogleFonts.poppins(
+                        fontSize: 11,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 0.95, // Increased to give more height
+          // Combined scrollable date and time picker
+          Container(
+            height: 420,
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.circular(12),
             ),
-            itemCount: locations.length,
-            itemBuilder: (context, index) {
-              return _buildLocationCard(locations[index]);
-            },
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Month/Year Header with Calendar Picker
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        DateFormat('MMMM yyyy').format(vm.selectedDate),
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => _showDatePicker(context, vm),
+                        icon: Icon(
+                          Icons.calendar_month,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        tooltip: 'Choose Date',
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  // Scrollable Date List (next 30 days)
+                  SizedBox(
+                    height: 85,
+                    child: _buildDateList(context, vm),
+                  ),
+                  const SizedBox(height: 20),
+                  // Time Slots Section
+                  Text(
+                    'Available Time Slots',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  // Morning slots
+                  _buildTimePeriodSection(context, vm, 'Morning', 6, 12),
+                  const SizedBox(height: 16),
+                  // Afternoon slots
+                  _buildTimePeriodSection(context, vm, 'Afternoon', 12, 18),
+                  const SizedBox(height: 16),
+                  // Evening slots
+                  _buildTimePeriodSection(context, vm, 'Evening', 18, 22),
+                ],
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildLocationCard(LocationOption location) {
-    final isSelected = selectedLocation == location.name;
+  Widget _buildTimePeriodSection(BuildContext context,
+      CreateActivityViewModel vm, String period, int startHour, int endHour) {
+    final slots = vm.availableTimeSlots
+        .where((slot) => slot.hour >= startHour && slot.hour < endHour)
+        .toList();
 
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedLocation = location.name;
-          selectedCourt = null; // Reset court selection
-          selectedTimeSlots.clear(); // Reset time slots
-          totalPrice = 0.0;
-        });
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: isSelected
-              ? Theme.of(context).primaryColor.withOpacity(0.1)
-              : Colors.grey[50],
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color:
-                isSelected ? Theme.of(context).primaryColor : Colors.grey[300]!,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Column(
+    if (slots.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
           children: [
-            // Location Image
-            Expanded(
-              flex: 2,
-              child: ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(12)),
-                child: Stack(
-                  children: [
-                    CachedNetworkImage(
-                      imageUrl: location.imageUrl,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        color: Colors.grey[300],
-                        child: const Center(child: CircularProgressIndicator()),
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        color: Colors.grey[300],
-                        child: const Icon(Icons.error),
-                      ),
-                    ),
-                    // City badge
-                    Positioned(
-                      top: 8,
-                      left: 8,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.7),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          location.city,
-                          style: GoogleFonts.poppins(
-                            fontSize: 8,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            Icon(
+              period == 'Morning'
+                  ? Icons.wb_sunny
+                  : period == 'Afternoon'
+                      ? Icons.wb_cloudy
+                      : Icons.nights_stay,
+              size: 16,
+              color: Colors.grey[600],
             ),
-            // Location Details
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Top row with icon, name, and check
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? Theme.of(context).primaryColor
-                                : Colors.grey[400],
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Icon(
-                            location.icon,
-                            color: Colors.white,
-                            size: 12,
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            location.name,
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 10,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (isSelected)
-                          Icon(
-                            Icons.check_circle,
-                            color: Theme.of(context).primaryColor,
-                            size: 14,
-                          ),
-                      ],
-                    ),
-
-                    // Address
-                    Text(
-                      location.address,
-                      style: GoogleFonts.poppins(
-                        fontSize: 8,
-                        color: Colors.grey[600],
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                    ),
-
-                    // Distance
-                    Text(
-                      location.distance,
-                      style: GoogleFonts.poppins(
-                        fontSize: 9,
-                        color: isSelected
-                            ? Theme.of(context).primaryColor
-                            : Colors.grey[600],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
+            const SizedBox(width: 6),
+            Text(
+              period,
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[700],
               ),
             ),
           ],
         ),
-      ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: slots.map((slot) {
+            final isSelected = vm.isTimeSlotSelected(vm.selectedDate, slot);
+            final timeString =
+                '${slot.hour.toString().padLeft(2, '0')}:${slot.minute.toString().padLeft(2, '0')}';
+
+            return GestureDetector(
+              onTap: () => vm.toggleTimeSlot(vm.selectedDate, slot),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? Theme.of(context).primaryColor
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: isSelected
+                        ? Theme.of(context).primaryColor
+                        : Colors.grey[300]!,
+                  ),
+                ),
+                child: Text(
+                  timeString,
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight:
+                        isSelected ? FontWeight.w600 : FontWeight.normal,
+                    color: isSelected ? Colors.white : Colors.black,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 
-  Widget _buildPriceSummary() {
-    final selectedCourtData = _getSelectedCourtData();
+  Widget _buildPriceSummary(BuildContext context, CreateActivityViewModel vm) {
+    final selectedCourtData = vm.selectedCourtData;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -682,21 +1237,127 @@ class _CreateActivityViewState extends State<CreateActivityView>
         borderRadius: BorderRadius.circular(20),
         border:
             Border.all(color: Theme.of(context).primaryColor.withOpacity(0.3)),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).primaryColor.withOpacity(0.1),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Date and Time Info
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: () {
+                // Group time slots by date
+                final Map<DateTime, List<TimeSlot>> slotsByDate = {};
+                for (var slot in vm.selectedTimeSlots.values) {
+                  final dateKey =
+                      DateTime(slot.date.year, slot.date.month, slot.date.day);
+                  if (!slotsByDate.containsKey(dateKey)) {
+                    slotsByDate[dateKey] = [];
+                  }
+                  slotsByDate[dateKey]!.add(slot);
+                }
+
+                // Sort dates
+                final sortedDates = slotsByDate.keys.toList()..sort();
+
+                // Build widgets for each date
+                final List<Widget> dateWidgets = [];
+                for (int i = 0; i < sortedDates.length; i++) {
+                  final date = sortedDates[i];
+                  final slots = slotsByDate[date]!;
+
+                  // Sort slots by time
+                  slots.sort((a, b) {
+                    final aMinutes = a.time.hour * 60 + a.time.minute;
+                    final bMinutes = b.time.hour * 60 + b.time.minute;
+                    return aMinutes.compareTo(bMinutes);
+                  });
+
+                  if (i > 0) {
+                    dateWidgets.add(const SizedBox(height: 12));
+                  }
+
+                  dateWidgets.add(
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.calendar_today,
+                          size: 16,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                DateFormat('EEEE, d MMMM yyyy').format(date),
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Wrap(
+                                spacing: 4,
+                                runSpacing: 4,
+                                children: slots.map((slot) {
+                                  final timeString =
+                                      '${slot.time.hour.toString().padLeft(2, '0')}:${slot.time.minute.toString().padLeft(2, '0')}';
+                                  return Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .primaryColor
+                                          .withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(6),
+                                      border: Border.all(
+                                        color: Theme.of(context)
+                                            .primaryColor
+                                            .withOpacity(0.3),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      timeString,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return dateWidgets;
+              }(),
+            ),
+          ),
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${selectedTimeSlots.length} jam dipilih',
+                '${vm.selectedTimeSlots.length} jam dipilih',
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -723,11 +1384,11 @@ class _CreateActivityViewState extends State<CreateActivityView>
                 ),
               ),
               Text(
-                'Rp${NumberFormat('#,###', 'id_ID').format(totalPrice)}',
+                'Rp${NumberFormat('#,###', 'id_ID').format(vm.totalPrice)}',
                 style: GoogleFonts.poppins(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ],
@@ -737,612 +1398,167 @@ class _CreateActivityViewState extends State<CreateActivityView>
     );
   }
 
-  Widget _buildCourtSection() {
-    final courts = courtsByLocation[selectedLocation] ?? [];
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child:
-                    Icon(Icons.sports, color: Theme.of(context).primaryColor),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Select Court',
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Column(
-            children: courts.map((court) => _buildCourtCard(court)).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCourtCard(CourtOption court) {
-    final isSelected = selectedCourt == court.name;
-
-    return GestureDetector(
-      onTap: court.isAvailable
-          ? () {
-              setState(() {
-                selectedCourt = court.name;
-                selectedTimeSlots
-                    .clear(); // Reset time slots when court changes
-                totalPrice = 0.0;
-              });
-            }
-          : null,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        decoration: BoxDecoration(
-          color: !court.isAvailable
-              ? Colors.grey[100]
-              : isSelected
-                  ? court.color.withOpacity(0.1)
-                  : Colors.grey[50],
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: !court.isAvailable
-                ? Colors.grey[300]!
-                : isSelected
-                    ? court.color
-                    : Colors.grey[300]!,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Column(
-          children: [
-            // Court Image
-            ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(12)),
-              child: Stack(
-                children: [
-                  CachedNetworkImage(
-                    imageUrl: court.imageUrl,
-                    height: 100,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      height: 100,
-                      color: Colors.grey[300],
-                      child: const Center(child: CircularProgressIndicator()),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      height: 100,
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.error),
-                    ),
-                  ),
-                  if (!court.isAvailable)
-                    Container(
-                      height: 100,
-                      width: double.infinity,
-                      color: Colors.black.withOpacity(0.5),
-                      child: const Center(
-                        child: Text(
-                          'TIDAK TERSEDIA',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ),
-                  if (isSelected && court.isAvailable)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: court.color,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Icon(
-                          Icons.check,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            // Court Details
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: !court.isAvailable
-                          ? Colors.grey[400]
-                          : isSelected
-                              ? court.color
-                              : Colors.grey[400],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(
-                      court.icon,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          court.name,
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                            color: !court.isAvailable ? Colors.grey[500] : null,
-                          ),
-                        ),
-                        Text(
-                          court.sport,
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        if (court.description.isNotEmpty)
-                          Text(
-                            court.description,
-                            style: GoogleFonts.poppins(
-                              fontSize: 11,
-                              color: Colors.grey[500],
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                      ],
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Rp${NumberFormat('#,###', 'id_ID').format(court.pricePerHour)}/jam',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: !court.isAvailable
-                              ? Colors.grey[500]
-                              : isSelected
-                                  ? court.color
-                                  : Colors.grey[700],
-                        ),
-                      ),
-                      Text(
-                        court.isAvailable ? 'Tersedia' : 'Tidak Tersedia',
-                        style: GoogleFonts.poppins(
-                          fontSize: 10,
-                          color: court.isAvailable ? Colors.green : Colors.red,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDateTimeGrid() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child:
-                    Icon(Icons.schedule, color: Theme.of(context).primaryColor),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'Select Date & Time',
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              // Date picker button
-              GestureDetector(
-                onTap: _showDatePicker,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Theme.of(context).primaryColor.withOpacity(0.3),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.calendar_today,
-                        size: 16,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        DateFormat('MMM yyyy').format(selectedDate),
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Select multiple time slots (each slot = 1 hour)',
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: Colors.grey[600],
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Date navigation and headers
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Previous week button
-              GestureDetector(
-                onTap: selectedDate
-                        .isAfter(DateTime.now().add(const Duration(days: 6)))
-                    ? _navigateToPreviousWeek
-                    : null,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: selectedDate.isAfter(
-                            DateTime.now().add(const Duration(days: 6)))
-                        ? Theme.of(context).primaryColor.withOpacity(0.1)
-                        : Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.chevron_left,
-                    color: selectedDate.isAfter(
-                            DateTime.now().add(const Duration(days: 6)))
-                        ? Theme.of(context).primaryColor
-                        : Colors.grey[400],
-                  ),
-                ),
-              ),
-
-              // Current week indicator
-              Text(
-                '${DateFormat('MMM d').format(visibleDates.first)} - ${DateFormat('MMM d').format(visibleDates.last)}',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-
-              // Next week button
-              GestureDetector(
-                onTap: _navigateToNextWeek,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.chevron_right,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Column(
-              children: [
-                // Date headers
-                Row(
-                  children: [
-                    const SizedBox(width: 80), // Space for time labels
-                    ...visibleDates.map((date) {
-                      final isToday = DateFormat('yyyy-MM-dd').format(date) ==
-                          DateFormat('yyyy-MM-dd').format(DateTime.now());
-                      final isPast = date.isBefore(
-                          DateTime.now().subtract(const Duration(hours: 1)));
-
-                      return Container(
-                        width: 80,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Column(
-                          children: [
-                            Text(
-                              DateFormat('EEE').format(date),
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: isPast
-                                    ? Colors.grey[400]
-                                    : Colors.grey[600],
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: isToday
-                                    ? Theme.of(context).primaryColor
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                DateFormat('d').format(date),
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: isToday
-                                      ? Colors.white
-                                      : (isPast
-                                          ? Colors.grey[400]
-                                          : Colors.black),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                // Time slots grid
-                ...availableTimeSlots
-                    .map((time) => Row(
-                          children: [
-                            // Time label
-                            SizedBox(
-                              width: 80,
-                              child: Text(
-                                time.format(context),
-                                style: GoogleFonts.poppins(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                            // Time slot buttons for each date
-                            ...visibleDates
-                                .map((date) => _buildTimeSlotButton(date, time))
-                                .toList(),
-                          ],
-                        ))
-                    .toList(),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTimeSlotButton(DateTime date, TimeOfDay time) {
-    final isSelected = _isTimeSlotSelected(date, time);
-    final selectedCourtData = _getSelectedCourtData();
-
-    // Check if this time slot is in the past
-    final slotDateTime =
-        DateTime(date.year, date.month, date.day, time.hour, time.minute);
-    final isPast = slotDateTime.isBefore(DateTime.now());
-
-    // Disable past time slots
-    final isEnabled = !isPast;
-
-    return GestureDetector(
-      onTap: isEnabled ? () => _toggleTimeSlot(date, time) : null,
-      child: Container(
-        width: 80,
-        height: 40,
-        margin: const EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          color: !isEnabled
-              ? Colors.grey[200]
-              : isSelected
-                  ? selectedCourtData?.color ?? Theme.of(context).primaryColor
-                  : Colors.grey[100],
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: !isEnabled
-                ? Colors.grey[300]!
-                : isSelected
-                    ? selectedCourtData?.color ?? Theme.of(context).primaryColor
-                    : Colors.grey[300]!,
-          ),
-        ),
-        child: Center(
-          child: !isEnabled
-              ? Icon(
-                  Icons.block,
-                  color: Colors.grey[400],
-                  size: 16,
-                )
-              : isSelected
-                  ? const Icon(
-                      Icons.check,
-                      color: Colors.white,
-                      size: 16,
-                    )
-                  : Container(),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildContinueButton() {
+  Widget _buildContinueButton(
+      BuildContext context, CreateActivityViewModel vm) {
     return SizedBox(
       width: double.infinity,
       height: 56,
       child: ElevatedButton(
-        onPressed: selectedTimeSlots.isNotEmpty
-            ? () {
-                // Navigate to event details page
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => EventDetailsView(
-                      selectedLocation: selectedLocation!,
-                      selectedCourt: selectedCourt!,
-                      selectedTimeSlots: selectedTimeSlots.values.toList(),
-                      totalPrice: totalPrice,
-                      courtData: _getSelectedCourtData()!,
-                    ),
-                  ),
-                );
-              }
-            : null,
+        onPressed: () {
+          // TODO: Navigate to event details with booking data
+          // Navigator.of(context).push(
+          //   MaterialPageRoute(
+          //     builder: (context) => EventDetailsView(
+          //       bookingData: vm.getBookingData(),
+          //     ),
+          //   ),
+          // );
+        },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Theme.of(context).primaryColor,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          elevation: 4,
-          shadowColor: Theme.of(context).primaryColor.withOpacity(0.3),
+          elevation: 0,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.arrow_forward),
-            const SizedBox(width: 12),
-            Text(
-              'Continue to Event Details',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+        child: Text(
+          'Continue to Event Details',
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
   }
-}
 
-// Data models
-class LocationOption {
-  final String name;
-  final String address;
-  final String distance;
-  final String city;
-  final IconData icon;
-  final String imageUrl;
+  Widget _buildDateList(BuildContext context, CreateActivityViewModel vm) {
+    // Calculate the index of the selected date
+    final daysDifference = vm.selectedDate.difference(DateTime.now()).inDays;
 
-  LocationOption({
-    required this.name,
-    required this.address,
-    required this.distance,
-    required this.city,
-    required this.icon,
-    required this.imageUrl,
-  });
-}
+    // Extend the list to include the selected date if it's beyond 30 days
+    final maxDays = daysDifference >= 30 ? daysDifference + 10 : 30;
+    final selectedIndex = daysDifference >= 0 ? daysDifference : 0;
 
-class CourtOption {
-  final String name;
-  final String sport;
-  final double pricePerHour;
-  final IconData icon;
-  final Color color;
-  final bool isAvailable;
-  final String imageUrl;
-  final String description;
+    return ListView.builder(
+      key: ValueKey('date_list_${vm.selectedDate}'),
+      scrollDirection: Axis.horizontal,
+      itemCount: maxDays,
+      controller: ScrollController(
+        initialScrollOffset: selectedIndex * 78.0, // 70px width + 8px margin
+      ),
+      itemBuilder: (context, index) {
+        final date = DateTime.now().add(Duration(days: index));
+        final isSelected = DateFormat('yyyy-MM-dd').format(vm.selectedDate) ==
+            DateFormat('yyyy-MM-dd').format(date);
+        final isToday = index == 0;
 
-  CourtOption({
-    required this.name,
-    required this.sport,
-    required this.pricePerHour,
-    required this.icon,
-    required this.color,
-    required this.isAvailable,
-    required this.imageUrl,
-    required this.description,
-  });
-}
+        return GestureDetector(
+          onTap: () => vm.selectDate(date),
+          child: Container(
+            width: 70,
+            margin: EdgeInsets.only(
+              right: 8,
+              left: index == 0 ? 0 : 0,
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+            decoration: BoxDecoration(
+              color: isSelected ? Theme.of(context).primaryColor : Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isSelected
+                    ? Theme.of(context).primaryColor
+                    : Colors.grey[300]!,
+                width: isSelected ? 2 : 1,
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (isToday)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 0,
+                    ),
+                    margin: const EdgeInsets.only(bottom: 1),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? Colors.white.withOpacity(0.2)
+                          : Theme.of(context).primaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                    child: Text(
+                      'Today',
+                      style: GoogleFonts.poppins(
+                        fontSize: 7,
+                        fontWeight: FontWeight.w600,
+                        color: isSelected
+                            ? Colors.white
+                            : Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ),
+                Text(
+                  DateFormat('EEE').format(date),
+                  style: GoogleFonts.poppins(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
+                    color: isSelected ? Colors.white : Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 1),
+                Text(
+                  DateFormat('d').format(date),
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: isSelected ? Colors.white : Colors.black,
+                  ),
+                ),
+                Text(
+                  DateFormat('MMM').format(date),
+                  style: GoogleFonts.poppins(
+                    fontSize: 9,
+                    color: isSelected
+                        ? Colors.white.withOpacity(0.9)
+                        : Colors.grey[500],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
-class TimeSlot {
-  final DateTime date;
-  final TimeOfDay time;
+  Future<void> _showDatePicker(
+      BuildContext context, CreateActivityViewModel vm) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: vm.selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Theme.of(context).colorScheme.primary,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
 
-  TimeSlot({
-    required this.date,
-    required this.time,
-  });
+    if (picked != null && picked != vm.selectedDate) {
+      vm.selectDate(picked);
+    }
+  }
 }

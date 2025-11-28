@@ -139,14 +139,16 @@ class _BookingsViewState extends State<BookingsView> {
                                 children: [
                                   Icon(
                                     Icons.history,
-                                    color: Theme.of(context).primaryColor,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                     size: 18,
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
                                     'Past',
                                     style: GoogleFonts.poppins(
-                                      color: Theme.of(context).primaryColor,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       fontWeight: FontWeight.w600,
                                       fontSize: 14,
                                     ),
@@ -456,7 +458,7 @@ class _BookingsViewState extends State<BookingsView> {
                             child: Icon(
                               _getSportIcon(booking.sportType),
                               size: 16,
-                              color: Theme.of(context).primaryColor,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -510,7 +512,7 @@ class _BookingsViewState extends State<BookingsView> {
                         style: GoogleFonts.poppins(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                     ],
@@ -543,7 +545,7 @@ class _BookingsViewState extends State<BookingsView> {
             _buildActionButton(
               'Reschedule',
               Icons.edit_calendar,
-              Theme.of(context).primaryColor,
+              Theme.of(context).colorScheme.primary,
               () => model.showRescheduleDialog(context, booking),
               isFullWidth: true,
             ),
@@ -730,7 +732,7 @@ class _BookingsViewState extends State<BookingsView> {
               viewModel.navigateToCreateBooking();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).primaryColor,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),

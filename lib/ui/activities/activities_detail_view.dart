@@ -16,7 +16,8 @@ class ActivitiesDetailView extends StatefulWidget {
   State<ActivitiesDetailView> createState() => _ActivitiesDetailViewState();
 }
 
-class _ActivitiesDetailViewState extends State<ActivitiesDetailView> with TickerProviderStateMixin {
+class _ActivitiesDetailViewState extends State<ActivitiesDetailView>
+    with TickerProviderStateMixin {
   late AnimationController _fabAnimationController;
   late Animation<double> _fabAnimation;
 
@@ -141,7 +142,8 @@ class _ActivitiesDetailViewState extends State<ActivitiesDetailView> with Ticker
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
                           color: Colors.grey[300],
-                          child: const Center(child: CircularProgressIndicator()),
+                          child:
+                              const Center(child: CircularProgressIndicator()),
                         ),
                         errorWidget: (context, url, error) => Container(
                           color: Colors.grey[300],
@@ -171,13 +173,15 @@ class _ActivitiesDetailViewState extends State<ActivitiesDetailView> with Ticker
                     bottom: 20,
                     left: 20,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
                         color: _getStatusColor(widget.booking.status),
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: _getStatusColor(widget.booking.status).withOpacity(0.3),
+                            color: _getStatusColor(widget.booking.status)
+                                .withOpacity(0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -198,13 +202,19 @@ class _ActivitiesDetailViewState extends State<ActivitiesDetailView> with Ticker
                     bottom: 20,
                     right: 20,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
-                        color: widget.booking.isHost ? Colors.green : Colors.orange,
+                        color: widget.booking.isHost
+                            ? Colors.green
+                            : Colors.orange,
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: (widget.booking.isHost ? Colors.green : Colors.orange).withOpacity(0.3),
+                            color: (widget.booking.isHost
+                                    ? Colors.green
+                                    : Colors.orange)
+                                .withOpacity(0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -250,17 +260,24 @@ class _ActivitiesDetailViewState extends State<ActivitiesDetailView> with Ticker
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: widget.booking.isPublicEvent ? Colors.purple.withOpacity(0.1) : Colors.indigo.withOpacity(0.1),
+                            color: widget.booking.isPublicEvent
+                                ? Colors.purple.withOpacity(0.1)
+                                : Colors.indigo.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
-                            widget.booking.isPublicEvent ? 'Public Event' : 'Private Event',
+                            widget.booking.isPublicEvent
+                                ? 'Public Event'
+                                : 'Private Event',
                             style: GoogleFonts.poppins(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: widget.booking.isPublicEvent ? Colors.purple : Colors.indigo,
+                              color: widget.booking.isPublicEvent
+                                  ? Colors.purple
+                                  : Colors.indigo,
                             ),
                           ),
                         ),
@@ -339,14 +356,17 @@ class _ActivitiesDetailViewState extends State<ActivitiesDetailView> with Ticker
                             icon: const Icon(Icons.person_add, size: 16),
                             label: Text(
                               'Invite',
-                              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                              style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w600),
                             ),
                           ),
                       ],
                     ),
                     const SizedBox(height: 16),
                     // Players List
-                    ...players.map((player) => _buildPlayerCard(player)).toList(),
+                    ...players
+                        .map((player) => _buildPlayerCard(player))
+                        .toList(),
                     const SizedBox(height: 24),
                     // Court Details Section
                     Text(
@@ -381,7 +401,8 @@ class _ActivitiesDetailViewState extends State<ActivitiesDetailView> with Ticker
     );
   }
 
-  Widget _buildInfoCard(IconData icon, String label, String value, Color color, {bool isFullWidth = false}) {
+  Widget _buildInfoCard(IconData icon, String label, String value, Color color,
+      {bool isFullWidth = false}) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -529,7 +550,8 @@ class _ActivitiesDetailViewState extends State<ActivitiesDetailView> with Ticker
                     if (player.isHost) ...[
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
                           color: Colors.green.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
@@ -554,9 +576,13 @@ class _ActivitiesDetailViewState extends State<ActivitiesDetailView> with Ticker
                       children: List.generate(
                         5,
                         (index) => Icon(
-                          index < player.skillLevel ? Icons.star : Icons.star_border,
+                          index < player.skillLevel
+                              ? Icons.star
+                              : Icons.star_border,
                           size: 14,
-                          color: index < player.skillLevel ? Colors.amber : Colors.grey[300],
+                          color: index < player.skillLevel
+                              ? Colors.amber
+                              : Colors.grey[300],
                         ),
                       ),
                     ),
@@ -588,7 +614,7 @@ class _ActivitiesDetailViewState extends State<ActivitiesDetailView> with Ticker
             icon: const Icon(Icons.message),
             style: IconButton.styleFrom(
               backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
-              foregroundColor: Theme.of(context).primaryColor,
+              foregroundColor: Theme.of(context).colorScheme.primary,
             ),
           ),
         ],
@@ -654,7 +680,7 @@ class _ActivitiesDetailViewState extends State<ActivitiesDetailView> with Ticker
         onPressed: () {
           _showHostActions();
         },
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         elevation: 8,
         icon: const Icon(Icons.settings, color: Colors.white),
         label: Text(
@@ -707,7 +733,8 @@ class _ActivitiesDetailViewState extends State<ActivitiesDetailView> with Ticker
             const SizedBox(height: 24),
             _buildActionTile('Reschedule', Icons.edit_calendar, () {}),
             _buildActionTile('Invite Players', Icons.person_add, () {}),
-            _buildActionTile('Cancel Booking', Icons.cancel, () {}, isDestructive: true),
+            _buildActionTile('Cancel Booking', Icons.cancel, () {},
+                isDestructive: true),
           ],
         ),
       ),
@@ -735,24 +762,29 @@ class _ActivitiesDetailViewState extends State<ActivitiesDetailView> with Ticker
             const SizedBox(height: 24),
             if (widget.booking.isCoHost ?? false)
               _buildActionTile('Invite Friends', Icons.person_add, () {}),
-            _buildActionTile('Leave Booking', Icons.exit_to_app, () {}, isDestructive: true),
+            _buildActionTile('Leave Booking', Icons.exit_to_app, () {},
+                isDestructive: true),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildActionTile(String title, IconData icon, VoidCallback onTap, {bool isDestructive = false}) {
+  Widget _buildActionTile(String title, IconData icon, VoidCallback onTap,
+      {bool isDestructive = false}) {
     return ListTile(
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: (isDestructive ? Colors.red : Theme.of(context).primaryColor).withOpacity(0.1),
+          color: (isDestructive ? Colors.red : Theme.of(context).primaryColor)
+              .withOpacity(0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(
           icon,
-          color: isDestructive ? Colors.red : Theme.of(context).primaryColor,
+          color: isDestructive
+              ? Colors.red
+              : Theme.of(context).colorScheme.primary,
         ),
       ),
       title: Text(

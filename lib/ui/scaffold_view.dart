@@ -119,24 +119,16 @@ class _ScaffoldViewState extends State<ScaffoldView>
             decoration: BoxDecoration(
               color: backgroundColor,
               borderRadius: BorderRadius.circular(25),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 15,
-                  offset: const Offset(0, 5),
-                  spreadRadius: 1,
-                ),
-              ],
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ...List.generate(2, (index) {
                   final isSelected = vm.currentNavIndex == index;
                   return _buildNavItem(
                       vm, index, isSelected, selectedColor, unselectedColor);
                 }),
-                Container(width: 60),
+                const SizedBox(width: 48),
                 ...List.generate(2, (index) {
                   final actualIndex = index + 2;
                   final isSelected = vm.currentNavIndex == actualIndex;
@@ -158,13 +150,6 @@ class _ScaffoldViewState extends State<ScaffoldView>
                 decoration: BoxDecoration(
                   color: fabColor,
                   shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: fabColor.withOpacity(0.3),
-                      blurRadius: 10,
-                      spreadRadius: 2,
-                    ),
-                  ],
                 ),
                 child: const Icon(
                   Icons.add,

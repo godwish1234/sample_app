@@ -24,6 +24,7 @@ dependency_overrides:
   # ffi: ^2.0.1
   intl: 0.18.0
   http: 1.0.0
+  win32: ^5.0.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package depen dencies to the latest versions

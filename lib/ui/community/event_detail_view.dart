@@ -203,7 +203,7 @@ class _EventDetailViewState extends State<EventDetailView>
                             style: GoogleFonts.poppins(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: Theme.of(context).primaryColor,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ],
@@ -343,7 +343,8 @@ class _EventDetailViewState extends State<EventDetailView>
                         children: [
                           CircleAvatar(
                             radius: 24,
-                            backgroundColor: Theme.of(context).primaryColor,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
                             child: Text(
                               'JD',
                               style: GoogleFonts.poppins(
@@ -381,7 +382,8 @@ class _EventDetailViewState extends State<EventDetailView>
                               backgroundColor: Theme.of(context)
                                   .primaryColor
                                   .withOpacity(0.1),
-                              foregroundColor: Theme.of(context).primaryColor,
+                              foregroundColor:
+                                  Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ],
@@ -431,8 +433,9 @@ class _EventDetailViewState extends State<EventDetailView>
                 ),
               );
             },
-            backgroundColor:
-                event.isAttending ? Colors.red : Theme.of(context).primaryColor,
+            backgroundColor: event.isAttending
+                ? Colors.red
+                : Theme.of(context).colorScheme.primary,
             elevation: 8,
             icon: Icon(
               event.isAttending ? Icons.close : Icons.add,
