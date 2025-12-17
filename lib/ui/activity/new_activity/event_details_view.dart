@@ -2,8 +2,8 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:sample_app/ui/activities/new_activity/activity_summary_view.dart';
-import 'package:sample_app/ui/activities/new_activity/create_activity_view_model.dart';
+import 'package:sample_app/ui/activity/new_activity/activity_summary_view.dart';
+import 'package:sample_app/ui/activity/new_activity/create_activity_view_model.dart';
 
 class EventDetailsView extends StatefulWidget {
   final String selectedLocation;

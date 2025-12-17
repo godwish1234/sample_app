@@ -2,26 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:sample_app/ui/activities/activities_view_model.dart';
+import 'package:sample_app/ui/activity/activity_view_model.dart';
 
-class ActivitiesDetailView extends StatefulWidget {
+class ActivityDetailView extends StatefulWidget {
   final Booking booking;
 
-  const ActivitiesDetailView({
+  const ActivityDetailView({
     super.key,
     required this.booking,
   });
 
   @override
-  State<ActivitiesDetailView> createState() => _ActivitiesDetailViewState();
+  State<ActivityDetailView> createState() => _ActivityDetailViewState();
 }
 
-class _ActivitiesDetailViewState extends State<ActivitiesDetailView>
+class _ActivityDetailViewState extends State<ActivityDetailView>
     with TickerProviderStateMixin {
   late AnimationController _fabAnimationController;
   late Animation<double> _fabAnimation;
 
-  // Mock player data - replace with actual data from your service
   final List<BookingPlayer> players = [
     BookingPlayer(
       id: '1',

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:sample_app/ui/cafe/cafe_menu_view.dart';
-import 'package:sample_app/ui/equipment/equipment_view.dart';
+import 'package:sample_app/ui/home/cafe/cafe_menu_view.dart';
+import 'package:sample_app/ui/home/equipment/equipment_view.dart';
 import 'package:stacked/stacked.dart';
 import 'package:sample_app/routing/app_link_location_keys.dart';
 import 'package:sample_app/ui/home/home_view_model.dart';

@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:sample_app/ui/activities/activities_detail_view.dart';
-import 'package:sample_app/ui/activities/past_activities_view.dart';
+import 'package:sample_app/ui/activity/activity_detail_view.dart';
+import 'package:sample_app/ui/activity/past_activity_view.dart';
 import 'package:stacked/stacked.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:sample_app/routing/app_link_location_keys.dart';
-import 'package:sample_app/ui/activities/activities_view_model.dart';
+import 'package:sample_app/ui/activity/activity_view_model.dart';
 
-class BookingsView extends StatefulWidget {
-  const BookingsView({super.key});
+class ActivityView extends StatefulWidget {
+  const ActivityView({super.key});
 
   static MaterialPage page() => const MaterialPage(
         name: AppLinkLocationKeys.bookings,
         key: ValueKey(AppLinkLocationKeys.bookings),
-        child: BookingsView(),
+        child: ActivityView(),
       );
 
   @override
-  State<BookingsView> createState() => _BookingsViewState();
+  State<ActivityView> createState() => _ActivityViewState();
 }
 
-class _BookingsViewState extends State<BookingsView> {
+class _ActivityViewState extends State<ActivityView> {
   final TextEditingController _searchController = TextEditingController();
   String _roleFilter = 'All';
 
@@ -40,8 +40,8 @@ class _BookingsViewState extends State<BookingsView> {
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<ActivitiesViewModel>.reactive(
-      viewModelBuilder: () => ActivitiesViewModel(),
+    return ViewModelBuilder<ActivityViewModel>.reactive(
+      viewModelBuilder: () => ActivityViewModel(),
       onViewModelReady: (model) => model.initialize(),
       builder: (context, model, child) {
         final searchText = _searchController.text.toLowerCase();
@@ -106,7 +106,7 @@ class _BookingsViewState extends State<BookingsView> {
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => PastActivitiesView(
+                                  builder: (context) => PastActivityView(
                                     bookings:
                                         model.allBookings.where((booking) {
                                       return booking.startDateTime
@@ -269,7 +269,7 @@ class _BookingsViewState extends State<BookingsView> {
   }
 
   Widget _buildModernBookingCard(
-      BuildContext context, Booking booking, ActivitiesViewModel model) {
+      BuildContext context, Booking booking, ActivityViewModel model) {
     final isUpcoming = booking.startDateTime.isAfter(DateTime.now());
     final isOneWeekBefore = booking.startDateTime
         .isAfter(DateTime.now().add(const Duration(days: 7)));
@@ -281,7 +281,7 @@ class _BookingsViewState extends State<BookingsView> {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => ActivitiesDetailView(booking: booking),
+            builder: (context) => ActivityDetailView(booking: booking),
           ),
         );
       },
@@ -533,7 +533,7 @@ class _BookingsViewState extends State<BookingsView> {
     );
   }
 
-  Widget _buildActionButtons(Booking booking, ActivitiesViewModel model,
+  Widget _buildActionButtons(Booking booking, ActivityViewModel model,
       BuildContext context, bool isOneWeekBefore) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenWidth < 375;
@@ -728,7 +728,7 @@ class _BookingsViewState extends State<BookingsView> {
           const SizedBox(height: 30),
           ElevatedButton(
             onPressed: () {
-              final viewModel = ActivitiesViewModel();
+              final viewModel = ActivityViewModel();
               viewModel.navigateToCreateBooking();
             },
             style: ElevatedButton.styleFrom(

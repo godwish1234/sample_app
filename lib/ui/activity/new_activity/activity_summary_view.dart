@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:sample_app/ui/activities/new_activity/create_activity_view_model.dart';
+import 'package:sample_app/ui/activity/new_activity/create_activity_view_model.dart';
 import 'package:sample_app/ui/payment/payment.dart';
 
 class ActivitySummaryView extends StatelessWidget {

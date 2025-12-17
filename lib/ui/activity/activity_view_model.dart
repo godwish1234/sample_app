@@ -71,8 +71,7 @@ class Booking {
   }
 }
 
-class ActivitiesViewModel extends BaseViewModel {
-  final _bookingService = GetIt.instance<BookingService>();
+class ActivityViewModel extends BaseViewModel {
   final _navigationService = GetIt.instance<NavigationService>();
 
   List<Booking> _allBookings = [];

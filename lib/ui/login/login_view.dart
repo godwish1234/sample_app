@@ -8,7 +8,7 @@ import 'package:sample_app/components/my_button.dart';
 import 'package:sample_app/components/my_text_field.dart';
 import 'package:sample_app/localizations/locale_keys.g.dart';
 import 'package:sample_app/routing/app_link_location_keys.dart';
-import 'package:sample_app/ui/login_view_model.dart';
+import 'package:sample_app/ui/login/login_view_model.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});

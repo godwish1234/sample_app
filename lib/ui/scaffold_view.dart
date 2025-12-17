@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:sample_app/ui/activities/activities_view.dart';
-import 'package:sample_app/ui/activities/new_activity/create_activity_view.dart';
+import 'package:sample_app/ui/activity/activity_view.dart';
+import 'package:sample_app/ui/activity/new_activity/create_activity_view.dart';
 import 'package:sample_app/ui/community/event_view.dart';
 import 'package:stacked/stacked.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -44,8 +44,8 @@ class _ScaffoldViewState extends State<ScaffoldView>
       activeIcon: Icons.home,
     ),
     NavigationItem(
-      navRailName: 'Bookings',
-      bottomNavBarName: 'Bookings',
+      navRailName: 'Activity',
+      bottomNavBarName: 'Activity',
       icon: Icons.calendar_today_outlined,
       activeIcon: Icons.calendar_today,
     ),
@@ -72,7 +72,7 @@ class _ScaffoldViewState extends State<ScaffoldView>
   Widget build(BuildContext context) {
     final children = [
       const HomeView(),
-      const BookingsView(),
+      const ActivityView(),
       const EventView(),
       const ProfileView()
     ];

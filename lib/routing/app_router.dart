@@ -4,7 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:sample_app/providers/app_state_manager.dart';
 import 'package:sample_app/routing/app_link.dart';
 import 'package:sample_app/routing/app_link_location_keys.dart';
-import 'package:sample_app/ui/login_view.dart';
+import 'package:sample_app/ui/login/login_view.dart';
 import 'package:sample_app/ui/scaffold_view.dart';
 
 class AppRouter extends RouterDelegate<AppLink>

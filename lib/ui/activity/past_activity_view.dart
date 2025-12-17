@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:sample_app/ui/activities/activities_detail_view.dart';
-import 'package:sample_app/ui/activities/activities_view_model.dart';
+import 'package:sample_app/ui/activity/activity_detail_view.dart';
+import 'package:sample_app/ui/activity/activity_view_model.dart';
 
-class PastActivitiesView extends StatefulWidget {
+class PastActivityView extends StatefulWidget {
   final List<Booking> bookings;
 
-  const PastActivitiesView({
+  const PastActivityView({
     super.key,
     required this.bookings,
   });
 
   @override
-  State<PastActivitiesView> createState() => _PastActivitiesViewState();
+  State<PastActivityView> createState() => _PastActivityViewState();
 }
 
-class _PastActivitiesViewState extends State<PastActivitiesView> {
+class _PastActivityViewState extends State<PastActivityView> {
   final TextEditingController _searchController = TextEditingController();
   String _roleFilter = 'All';
 
@@ -175,7 +175,7 @@ class _PastActivitiesViewState extends State<PastActivitiesView> {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => ActivitiesDetailView(booking: booking),
+            builder: (context) => ActivityDetailView(booking: booking),
           ),
         );
       },

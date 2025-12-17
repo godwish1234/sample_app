@@ -1,5 +1,5 @@
 import 'package:sample_app/services/interfaces/booking_service.dart';
-import 'package:sample_app/ui/activities/activities_view_model.dart';
+import 'package:sample_app/ui/activity/activity_view_model.dart';
 
 class BookingServiceImpl implements BookingService {
   @override
