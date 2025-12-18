@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sample_app/ui/home/cafe/cafe_menu_view.dart';
 import 'package:sample_app/ui/home/equipment/equipment_view.dart';
+import 'package:sample_app/ui/notifications/notification_view.dart';
+import 'package:sample_app/ui/chat/chat_view.dart';
 import 'package:stacked/stacked.dart';
 import 'package:sample_app/routing/app_link_location_keys.dart';
 import 'package:sample_app/ui/home/home_view_model.dart';
@@ -154,11 +156,32 @@ class _HomeViewState extends State<HomeView> {
                                 ],
                               ),
                             ),
-                            _buildHeaderIconButton(Icons.notifications_outlined,
-                                badgeCount: 1),
+                            _buildHeaderIconButton(
+                              Icons.notifications_outlined,
+                              badgeCount: 1,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const NotificationView(),
+                                  ),
+                                );
+                              },
+                            ),
                             const SizedBox(width: 10),
-                            _buildHeaderIconButton(Icons.chat_bubble_outline,
-                                badgeCount: 1),
+                            _buildHeaderIconButton(
+                              Icons.chat_bubble_outline,
+                              badgeCount: 1,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const ChatView(),
+                                  ),
+                                );
+                              },
+                            ),
                           ],
                         ),
                         const SizedBox(height: 16),
@@ -939,43 +962,47 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget _buildHeaderIconButton(IconData icon, {int badgeCount = 0}) {
-    return Stack(
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: Colors.grey[100],
-            shape: BoxShape.circle,
+  Widget _buildHeaderIconButton(IconData icon,
+      {int badgeCount = 0, VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Stack(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 22, color: Colors.grey[700]),
           ),
-          child: Icon(icon, size: 22, color: Colors.grey[700]),
-        ),
-        if (badgeCount > 0)
-          Positioned(
-            top: 0,
-            right: 0,
-            child: Container(
-              width: 16,
-              height: 16,
-              decoration: BoxDecoration(
-                color: Colors.redAccent,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 1.5),
-              ),
-              child: Center(
-                child: Text(
-                  badgeCount.toString(),
-                  style: GoogleFonts.poppins(
-                    fontSize: 9,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+          if (badgeCount > 0)
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Container(
+                width: 16,
+                height: 16,
+                decoration: BoxDecoration(
+                  color: Colors.redAccent,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 1.5),
+                ),
+                child: Center(
+                  child: Text(
+                    badgeCount.toString(),
+                    style: GoogleFonts.poppins(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }

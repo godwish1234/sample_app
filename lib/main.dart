@@ -135,7 +135,7 @@ class _SampleAppState extends State<SampleApp> {
               routeInformationParser: _routeParser,
               routerDelegate: _appRouter,
               scaffoldMessengerKey: _scaffoldMessengerStateKey,
-              title: "Wish Laundry POS",
+              title: "SportsID App",
               // themeMode: value.mode,
               theme: ThemeData(
                 useMaterial3: false,

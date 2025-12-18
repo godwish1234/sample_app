@@ -96,7 +96,7 @@ class _ActivityViewState extends State<ActivityView> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'My Bookings',
+                            'My Activities',
                             style: GoogleFonts.poppins(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
