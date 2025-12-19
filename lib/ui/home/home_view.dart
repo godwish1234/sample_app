@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:sample_app/ui/home/cafe/cafe_menu_view.dart';
-import 'package:sample_app/ui/home/equipment/equipment_view.dart';
+import 'package:sample_app/ui/activity/new_activity/create_activity_view.dart';
+import 'package:sample_app/ui/home/find_game/find_game_view.dart';
 import 'package:sample_app/ui/notifications/notification_view.dart';
 import 'package:sample_app/ui/chat/chat_view.dart';
 import 'package:stacked/stacked.dart';
@@ -111,294 +111,222 @@ class _HomeViewState extends State<HomeView> {
           backgroundColor: Colors.grey[50],
           body: CustomScrollView(
             slivers: [
-              // Header
+              // Header with Background
               SliverToBoxAdapter(
-                child: SafeArea(
-                  bottom: false,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+                child: Stack(
+                  children: [
+                    // Sports Background Image
+                    Container(
+                      height: 300,
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(
+                              'assets/images/bg.jpg'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withOpacity(0.5),
+                              Colors.black.withOpacity(0.3),
+                              Colors.black.withOpacity(0.1),
+                              Colors.grey[50]!.withOpacity(0.3),
+                              Colors.grey[50]!,
+                            ],
+                            stops: const [0.0, 0.4, 0.7, 0.9, 1.0],
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Header Content
+                    SafeArea(
+                      bottom: false,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Hello, ${vm.user?.displayName ?? 'Guest'}',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Row(
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Icon(Icons.location_on,
-                                          size: 16, color: Colors.grey[600]),
-                                      const SizedBox(width: 6),
                                       Text(
-                                        'Central Jakarta',
+                                        'Hello, ${vm.user?.displayName ?? 'Guest'}',
                                         style: GoogleFonts.poppins(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.redAccent,
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.white,
                                         ),
                                       ),
-                                      const SizedBox(width: 6),
-                                      const Icon(Icons.keyboard_arrow_down,
-                                          size: 18, color: Colors.redAccent),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            _buildHeaderIconButton(
-                              Icons.notifications_outlined,
-                              badgeCount: 1,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const NotificationView(),
-                                  ),
-                                );
-                              },
-                            ),
-                            const SizedBox(width: 10),
-                            _buildHeaderIconButton(
-                              Icons.chat_bubble_outline,
-                              badgeCount: 1,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const ChatView(),
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        if (vm.user != null)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 14),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary,
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: Row(
-                              children: [
-                                // Left side - Membership info
-                                Expanded(
-                                  child: Row(
-                                    children: [
-                                      const Icon(Icons.workspace_premium,
-                                          color: Colors.white, size: 18),
-                                      const SizedBox(width: 10),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                      const SizedBox(height: 6),
+                                      Row(
                                         children: [
-                                          Text('Sporta Super',
-                                              style: GoogleFonts.poppins(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.white)),
-                                          Text('Membership >',
-                                              style: GoogleFonts.poppins(
-                                                  fontSize: 11,
-                                                  color: Colors.white
-                                                      .withOpacity(0.95))),
+                                          const Icon(Icons.location_on,
+                                              size: 16, color: Colors.white70),
+                                          const SizedBox(width: 6),
+                                          Text(
+                                            'Central Jakarta',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          const Icon(Icons.keyboard_arrow_down,
+                                              size: 18, color: Colors.white),
                                         ],
                                       ),
                                     ],
                                   ),
                                 ),
-                                // Center divider
-                                Container(
-                                    width: 1,
-                                    height: 32,
-                                    color: Colors.white.withOpacity(0.4)),
-                                // Right side - Points info
-                                Expanded(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              const Icon(
-                                                  Icons.add_circle_outline,
-                                                  color: Colors.white,
-                                                  size: 16),
-                                              const SizedBox(width: 6),
-                                              Text('500.000',
-                                                  style: GoogleFonts.poppins(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      color: Colors.white)),
-                                            ],
-                                          ),
-                                          Text('Sporta Points',
-                                              style: GoogleFonts.poppins(
-                                                  fontSize: 11,
-                                                  color: Colors.white
-                                                      .withOpacity(0.95))),
-                                        ],
+                                _buildHeaderIconButton(
+                                  Icons.notifications_outlined,
+                                  badgeCount: 1,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const NotificationView(),
                                       ),
-                                    ],
-                                  ),
+                                    );
+                                  },
+                                  isDark: true,
+                                ),
+                                const SizedBox(width: 10),
+                                _buildHeaderIconButton(
+                                  Icons.chat_bubble_outline,
+                                  badgeCount: 1,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const ChatView(),
+                                      ),
+                                    );
+                                  },
+                                  isDark: true,
                                 ),
                               ],
                             ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-
-              // Quick Actions Grid
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
-                sliver: SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    childAspectRatio: 0.95,
-                  ),
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final action = vm.quickActions[index];
-                      return GestureDetector(
-                        onTap: action.available
-                            ? () {
-                                if (action.label == 'Equipment') {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const EquipmentView(),
+                            const SizedBox(height: 12),
+                            if (vm.user != null)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 14),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.95),
+                                  borderRadius: BorderRadius.circular(14),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
                                     ),
-                                  );
-                                }
-                                if (action.label == 'Cafe Menu') {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const CafeMenuView(),
-                                    ),
-                                  );
-                                }
-                              }
-                            : null,
-                        child: Stack(
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              height: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.04),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Opacity(
-                                    opacity: action.available ? 1.0 : 0.5,
-                                    child: Icon(
-                                      action.icon,
-                                      color: action.color,
-                                      size: 32,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 4),
-                                    child: Opacity(
-                                      opacity: action.available ? 1.0 : 0.5,
-                                      child: Text(
-                                        action.label,
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.black87,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
+                                  ],
+                                ),
+                                child: Row(
+                                  children: [
+                                    // Left side - Membership info
+                                    Expanded(
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.workspace_premium,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                              size: 18),
+                                          const SizedBox(width: 10),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text('Sporta Super',
+                                                  style: GoogleFonts.poppins(
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: Colors.black87)),
+                                              Text('Membership >',
+                                                  style: GoogleFonts.poppins(
+                                                      fontSize: 11,
+                                                      color: Colors.grey[600])),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            // Coming Soon Banner
-                            if (!action.available)
-                              Positioned(
-                                top: 4,
-                                right: 4,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Colors.orange[400]!,
-                                        Colors.deepOrange[500]!,
-                                      ],
-                                    ),
-                                    borderRadius: BorderRadius.circular(8),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.orange.withOpacity(0.4),
-                                        blurRadius: 6,
-                                        offset: const Offset(0, 2),
+                                    // Center divider
+                                    Container(
+                                        width: 1,
+                                        height: 32,
+                                        color: const Color.fromRGBO(
+                                            224, 224, 224, 1)),
+                                    Expanded(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: [
+                                              Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(Icons.add_circle_outline,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+                                                      size: 16),
+                                                  const SizedBox(width: 6),
+                                                  Text('500.000',
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                              color: Colors
+                                                                  .black87)),
+                                                ],
+                                              ),
+                                              Text('Sporta Points',
+                                                  style: GoogleFonts.poppins(
+                                                      fontSize: 11,
+                                                      color: Colors.grey[600])),
+                                            ],
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                  child: Text(
-                                    'Soon',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 8,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                      height: 1,
                                     ),
-                                  ),
+                                  ],
                                 ),
                               ),
                           ],
                         ),
-                      );
-                    },
-                    childCount: vm.quickActions.length,
-                  ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      left: 20,
+                      right: 20,
+                      child: _buildModernQuickActions(context, vm),
+                    ),
+                  ],
                 ),
+              ),
+
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 20),
               ),
 
               // Urgent Reminders
@@ -963,7 +891,7 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Widget _buildHeaderIconButton(IconData icon,
-      {int badgeCount = 0, VoidCallback? onTap}) {
+      {int badgeCount = 0, VoidCallback? onTap, bool isDark = false}) {
     return GestureDetector(
       onTap: onTap,
       child: Stack(
@@ -972,10 +900,11 @@ class _HomeViewState extends State<HomeView> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color: isDark ? Colors.white.withOpacity(0.2) : Colors.grey[100],
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, size: 22, color: Colors.grey[700]),
+            child: Icon(icon,
+                size: 22, color: isDark ? Colors.white : Colors.grey[700]),
           ),
           if (badgeCount > 0)
             Positioned(
@@ -1004,5 +933,279 @@ class _HomeViewState extends State<HomeView> {
         ],
       ),
     );
+  }
+
+  Widget _buildModernQuickActions(BuildContext context, HomeViewModel vm) {
+    final primaryActions =
+        vm.quickActions.where((action) => action.isPrimary).toList();
+    final secondaryActions =
+        vm.quickActions.where((action) => !action.isPrimary).toList();
+
+    return Column(
+      children: [
+        // Primary Actions - Large buttons
+        Row(
+          children: [
+            for (int i = 0; i < primaryActions.length; i++) ...[
+              if (i > 0) const SizedBox(width: 12),
+              Expanded(
+                child: _buildPrimaryActionButton(
+                  context,
+                  primaryActions[i],
+                ),
+              ),
+            ],
+          ],
+        ),
+        const SizedBox(height: 12),
+        // Secondary Actions - Smaller buttons
+        Row(
+          children: [
+            for (int i = 0; i < secondaryActions.length; i++) ...[
+              if (i > 0) const SizedBox(width: 8),
+              Expanded(
+                child: _buildSecondaryActionButton(
+                  context,
+                  secondaryActions[i],
+                ),
+              ),
+            ],
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPrimaryActionButton(BuildContext context, QuickAction action) {
+    return GestureDetector(
+      onTap: action.available
+          ? () {
+              _handleActionTap(context, action);
+            }
+          : null,
+      child: Container(
+        height: 120,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: action.available
+                ? [
+                    action.color,
+                    action.color.withOpacity(0.8),
+                  ]
+                : [
+                    Colors.grey[300]!,
+                    Colors.grey[400]!,
+                  ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: action.available
+                  ? action.color.withOpacity(0.3)
+                  : Colors.grey.withOpacity(0.2),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            // Main content
+            Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      action.icon,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Flexible(
+                    child: Text(
+                      action.label,
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Coming Soon Badge
+            if (!action.available)
+              Positioned(
+                top: 12,
+                right: 12,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    'Coming Soon',
+                    style: GoogleFonts.poppins(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSecondaryActionButton(BuildContext context, QuickAction action) {
+    return GestureDetector(
+      onTap: action.available
+          ? () {
+              _handleActionTap(context, action);
+            }
+          : null,
+      child: Container(
+        height: 80,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: action.available
+                ? action.color.withOpacity(0.2)
+                : Colors.grey[300]!,
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            // Main content
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(7),
+                    decoration: BoxDecoration(
+                      color: action.available
+                          ? action.color.withOpacity(0.1)
+                          : Colors.grey[200],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      action.icon,
+                      color: action.available ? action.color : Colors.grey[500],
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Flexible(
+                    child: Text(
+                      action.label,
+                      style: GoogleFonts.poppins(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w600,
+                        color: action.available
+                            ? Colors.black87
+                            : Colors.grey[500],
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Coming Soon Badge
+            if (!action.available)
+              Positioned(
+                top: 6,
+                right: 6,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.orange[400]!,
+                        Colors.deepOrange[500]!,
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'Soon',
+                    style: GoogleFonts.poppins(
+                      fontSize: 7,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _handleActionTap(BuildContext context, QuickAction action) {
+    switch (action.id) {
+      case 'new_booking':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const CreateActivityView(),
+          ),
+        );
+        break;
+      case 'find_game':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const FindGameView(),
+          ),
+        );
+        break;
+    }
   }
 }

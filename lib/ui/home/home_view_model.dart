@@ -336,33 +336,22 @@ class HomeViewModel extends BaseViewModel {
 
   List<QuickAction> _getDummyQuickActions() {
     return [
+      // Primary Actions - Main features
       QuickAction(
-        id: 'checkin',
-        icon: Icons.qr_code_scanner,
-        label: 'Check In',
-        color: Colors.blue,
-        available: false, // Coming soon
+        id: 'new_booking',
+        icon: Icons.calendar_month_rounded,
+        label: 'New Booking',
+        color: const Color(0xFF2563EB), // Blue
+        available: true,
+        isPrimary: true,
       ),
       QuickAction(
-        id: 'tournaments',
-        icon: Icons.emoji_events,
-        label: 'Tournaments',
-        color: Colors.green,
-        available: false, // Coming soon
-      ),
-      QuickAction(
-        id: 'equipment',
-        icon: Icons.fitness_center,
-        label: 'Equipment',
-        color: Colors.orange,
-        available: true, // Available
-      ),
-      QuickAction(
-        id: 'cafe',
-        icon: Icons.local_cafe,
-        label: 'Cafe Menu',
-        color: Colors.brown,
-        available: true, // Available
+        id: 'find_game',
+        icon: Icons.sports_tennis_rounded,
+        label: 'Find Game',
+        color: const Color(0xFF10B981), // Green
+        available: true,
+        isPrimary: true,
       ),
     ];
   }
@@ -560,6 +549,7 @@ class QuickAction {
   final String label;
   final Color color;
   final bool available;
+  final bool isPrimary;
 
   QuickAction({
     required this.id,
@@ -567,6 +557,7 @@ class QuickAction {
     required this.label,
     required this.color,
     this.available = true,
+    this.isPrimary = false,
   });
 
   factory QuickAction.fromJson(Map<String, dynamic> json) {
@@ -578,6 +569,7 @@ class QuickAction {
       label: json['label'] as String,
       color: Colors.blue, // Default color
       available: json['available'] as bool? ?? true,
+      isPrimary: json['isPrimary'] as bool? ?? false,
     );
   }
 
@@ -589,6 +581,7 @@ class QuickAction {
       'label': label,
       'color': color.value.toString(),
       'available': available,
+      'isPrimary': isPrimary,
     };
   }
 }

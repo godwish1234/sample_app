@@ -45,11 +45,11 @@ class FriendRequest {
 class ChatViewModel extends BaseViewModel {
   List<ChatItem> _chats = [];
   List<FriendRequest> _friendRequests = [];
-  
+
   List<ChatItem> get chats => _chats;
-  List<FriendRequest> get pendingRequests => 
+  List<FriendRequest> get pendingRequests =>
       _friendRequests.where((r) => r.status == 'pending').toList();
-  
+
   bool get hasChats => _chats.isNotEmpty;
   bool get hasPendingRequests => pendingRequests.isNotEmpty;
 
@@ -80,13 +80,12 @@ class ChatViewModel extends BaseViewModel {
       // TODO: Search user by phone number in database
       // Simulate API call
       await Future.delayed(const Duration(seconds: 1));
-      
+
       // For now, simulate not found
       _searchError = 'User not found with this phone number';
-      
+
       // TODO: If user found, show dialog to send friend request
       // await sendFriendRequest(userId);
-      
     } catch (e) {
       _searchError = 'Error searching for user';
     } finally {
@@ -100,7 +99,7 @@ class ChatViewModel extends BaseViewModel {
     try {
       // TODO: Send friend request to backend
       await Future.delayed(const Duration(milliseconds: 500));
-      
+
       // TODO: Show success message
       notifyListeners();
     } catch (e) {

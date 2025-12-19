@@ -21,261 +21,153 @@ class ActivityView extends StatefulWidget {
 }
 
 class _ActivityViewState extends State<ActivityView> {
-  final TextEditingController _searchController = TextEditingController();
-  String _roleFilter = 'All';
-
-  @override
-  void initState() {
-    super.initState();
-    _searchController.addListener(() {
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<ActivityViewModel>.reactive(
       viewModelBuilder: () => ActivityViewModel(),
       onViewModelReady: (model) => model.initialize(),
       builder: (context, model, child) {
-        final searchText = _searchController.text.toLowerCase();
-
-        // Filter only upcoming bookings
+        // Filter all upcoming bookings
         final upcomingBookings = model.allBookings.where((booking) {
-          final matchesSearch =
-              booking.courtName.toLowerCase().contains(searchText) ||
-                  booking.location.toLowerCase().contains(searchText) ||
-                  booking.sportType.toLowerCase().contains(searchText);
-
-          final matchesRole = _roleFilter == 'All' ||
-              (_roleFilter == 'Host' && booking.isHost) ||
-              (_roleFilter == 'Attendee' && !booking.isHost);
-
           return booking.startDateTime.isAfter(DateTime.now()) &&
-              booking.status == BookingStatus.confirmed &&
-              matchesSearch &&
-              matchesRole;
+              booking.status == BookingStatus.confirmed;
         }).toList();
 
-        // Count past bookings for the badge
-        final pastBookingsCount = model.allBookings.where((booking) {
-          return booking.startDateTime.isBefore(DateTime.now()) ||
-              booking.status == BookingStatus.completed ||
-              booking.status == BookingStatus.cancelled;
-        }).length;
+        // Sort by date (closest first)
+        upcomingBookings
+            .sort((a, b) => a.startDateTime.compareTo(b.startDateTime));
 
         return Scaffold(
           backgroundColor: Colors.grey[50],
-          body: SafeArea(
-            child: Column(
-              children: [
-                // Modern Header with Search and Past Bookings Button
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header Row with Title and Past Bookings Button
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'My Activities',
-                            style: GoogleFonts.poppins(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => PastActivityView(
-                                    bookings:
-                                        model.allBookings.where((booking) {
-                                      return booking.startDateTime
-                                              .isBefore(DateTime.now()) ||
-                                          booking.status ==
-                                              BookingStatus.completed ||
-                                          booking.status ==
-                                              BookingStatus.cancelled;
-                                    }).toList(),
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .primaryColor
-                                    .withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: Theme.of(context)
-                                      .primaryColor
-                                      .withOpacity(0.2),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.history,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    size: 18,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Past',
-                                    style: GoogleFonts.poppins(
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      // Search Bar
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: TextField(
-                          controller: _searchController,
-                          decoration: InputDecoration(
-                            hintText: 'Search upcoming bookings...',
-                            hintStyle:
-                                GoogleFonts.poppins(color: Colors.grey[500]),
-                            prefixIcon:
-                                Icon(Icons.search, color: Colors.grey[500]),
-                            border: InputBorder.none,
-                            contentPadding:
-                                const EdgeInsets.symmetric(vertical: 16),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Role Filter Chips
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  child: Row(
-                    children: [
-                      Text(
-                        "Filter by:",
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      _buildFilterChip('All', _roleFilter == 'All',
-                          Theme.of(context).primaryColor),
-                      const SizedBox(width: 8),
-                      _buildFilterChip(
-                          'Host', _roleFilter == 'Host', Colors.green),
-                      const SizedBox(width: 8),
-                      _buildFilterChip(
-                          'Attendee', _roleFilter == 'Attendee', Colors.orange),
-                    ],
-                  ),
-                ),
-                // Content - Only Upcoming Bookings
-                Expanded(
-                  child: model.isBusy
-                      ? const Center(child: CircularProgressIndicator())
-                      : RefreshIndicator(
-                          onRefresh: () => model.refreshBookings(),
-                          child: upcomingBookings.isEmpty
-                              ? _buildEmptyState()
-                              : ListView.builder(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16),
-                                  itemCount: upcomingBookings.length,
-                                  itemBuilder: (context, index) {
-                                    final booking = upcomingBookings[index];
-                                    return _buildModernBookingCard(
-                                        context, booking, model);
-                                  },
-                                ),
-                        ),
-                ),
-              ],
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            elevation: 0,
+            title: Text(
+              'My Activities',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
             ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.history, color: Colors.white),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => PastActivityView(
+                        bookings: model.allBookings.where((booking) {
+                          return booking.startDateTime
+                                  .isBefore(DateTime.now()) ||
+                              booking.status == BookingStatus.completed ||
+                              booking.status == BookingStatus.cancelled;
+                        }).toList(),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
+          body: model.isBusy
+              ? const Center(child: CircularProgressIndicator())
+              : RefreshIndicator(
+                  onRefresh: () => model.refreshBookings(),
+                  child: upcomingBookings.isEmpty
+                      ? _buildEmptyState(
+                          icon: Icons.event_busy,
+                          title: 'No Upcoming Activities',
+                          subtitle: 'Your booked activities will appear here',
+                        )
+                      : _buildGroupedActivitiesList(upcomingBookings, model),
+                ),
         );
       },
     );
   }
 
-  Widget _buildFilterChip(String label, bool isSelected, Color color) {
-    return GestureDetector(
-      onTap: () => setState(() => _roleFilter = label),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? color : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withOpacity(0.3)),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: color.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : null,
-        ),
-        child: Text(
-          label,
-          style: GoogleFonts.poppins(
-            color: isSelected ? Colors.white : color,
-            fontWeight: FontWeight.w600,
-            fontSize: 13,
-          ),
+  Widget _buildGroupedActivitiesList(
+    List<Booking> bookings,
+    ActivityViewModel model,
+  ) {
+    // Group bookings by date
+    final Map<String, List<Booking>> groupedBookings = {};
+
+    for (var booking in bookings) {
+      final dateKey = DateFormat('yyyy-MM-dd').format(booking.startDateTime);
+      if (!groupedBookings.containsKey(dateKey)) {
+        groupedBookings[dateKey] = [];
+      }
+      groupedBookings[dateKey]!.add(booking);
+    }
+
+    // Sort the dates
+    final sortedDates = groupedBookings.keys.toList()
+      ..sort((a, b) => a.compareTo(b));
+
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+      itemCount: sortedDates.length,
+      itemBuilder: (context, dateIndex) {
+        final dateKey = sortedDates[dateIndex];
+        final dateBookings = groupedBookings[dateKey]!;
+        final date = DateTime.parse(dateKey);
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildDateHeader(date),
+            const SizedBox(height: 6),
+            ...dateBookings.map((booking) {
+              return _buildActivityCard(context, booking, model);
+            }),
+            const SizedBox(height: 12),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildDateHeader(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = today.add(const Duration(days: 1));
+    final targetDate = DateTime(date.year, date.month, date.day);
+
+    String dateLabel;
+
+    if (targetDate == today) {
+      dateLabel = 'Today';
+    } else if (targetDate == tomorrow) {
+      dateLabel = 'Tomorrow';
+    } else if (targetDate.difference(today).inDays < 7) {
+      dateLabel = DateFormat('EEEE').format(date);
+    } else {
+      dateLabel = DateFormat('EEEE, MMM d').format(date);
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 8),
+      child: Text(
+        dateLabel,
+        style: GoogleFonts.poppins(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          color: Colors.grey[600],
+          letterSpacing: 0.5,
         ),
       ),
     );
   }
 
-  Widget _buildModernBookingCard(
-      BuildContext context, Booking booking, ActivityViewModel model) {
-    final isUpcoming = booking.startDateTime.isAfter(DateTime.now());
-    final isOneWeekBefore = booking.startDateTime
-        .isAfter(DateTime.now().add(const Duration(days: 7)));
-
-    Color statusColor = _getStatusColor(booking.status);
-    String statusText = _getStatusText(booking.status);
+  Widget _buildActivityCard(
+    BuildContext context,
+    Booking booking,
+    ActivityViewModel model,
+  ) {
+    final daysUntil = booking.startDateTime.difference(DateTime.now()).inDays;
+    final hoursUntil = booking.startDateTime.difference(DateTime.now()).inHours;
 
     return GestureDetector(
       onTap: () {
@@ -286,494 +178,305 @@ class _ActivityViewState extends State<ActivityView> {
         );
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: const EdgeInsets.only(bottom: 12),
+        height: 140,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 15,
-              offset: const Offset(0, 5),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+          ),
         ),
-        child: Column(
+        child: Stack(
           children: [
-            // Image Header
-            Container(
-              height: 140,
-              decoration: BoxDecoration(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(20)),
-                image: DecorationImage(
-                  image: NetworkImage(booking.courtImageUrl),
-                  fit: BoxFit.cover,
-                  onError: (error, stackTrace) {},
-                ),
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(20)),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withOpacity(0.6),
-                    ],
+            Row(
+              children: [
+                // Left Side: Image
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    bottomLeft: Radius.circular(16),
                   ),
-                ),
-                child: Stack(
-                  children: [
-                    // Tap indicator
-                    Positioned(
-                      bottom: 12,
-                      right: 12,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.arrow_forward_ios,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                      ),
-                    ),
-                    // Event Type Badge
-                    Positioned(
-                      top: 12,
-                      left: 12,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: booking.isPublicEvent
-                              ? Colors.purple
-                              : Colors.indigo,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          booking.isPublicEvent ? 'Public' : 'Private',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                    // Status Badge
-                    Positioned(
-                      top: 12,
-                      right: 50,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: statusColor,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          statusText,
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                    // Court Name
-                    Positioned(
-                      bottom: 12,
-                      left: 12,
-                      right: 50,
-                      child: Text(
-                        booking.courtName,
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            // Content
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  // Date & Time Row
-                  Row(
-                    children: [
-                      Icon(Icons.calendar_today,
-                          size: 18, color: Colors.grey[600]),
-                      const SizedBox(width: 8),
-                      Text(
-                        DateFormat('EEE, MMM d').format(booking.startDateTime),
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Icon(Icons.access_time,
-                          size: 18, color: Colors.grey[600]),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          '${DateFormat('h:mm a').format(booking.startDateTime)} - ${DateFormat('h:mm a').format(booking.endDateTime)}',
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  // Sport & Role Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .primaryColor
-                                  .withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Icon(
-                              _getSportIcon(booking.sportType),
-                              size: 16,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            booking.sportType,
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
+                  child: Container(
+                    width: 140,
+                    height: 140,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.8),
+                          Theme.of(context).colorScheme.primary,
                         ],
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: booking.isHost
-                              ? Colors.green.withOpacity(0.1)
-                              : Colors.orange.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Image.network(
+                          booking.courtImageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withOpacity(0.1),
+                              child: Icon(
+                                _getSportIcon(booking.sportType),
+                                size: 48,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.5),
+                              ),
+                            );
+                          },
                         ),
-                        child: Text(
-                          booking.isHost ? 'Host' : 'Member',
-                          style: GoogleFonts.poppins(
-                            color:
-                                booking.isHost ? Colors.green : Colors.orange,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                        // Time Until Badge Overlay
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: _getTimeUntilColor(daysUntil),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              _getTimeUntilText(daysUntil, hoursUntil),
+                              style: GoogleFonts.poppins(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 12),
-                  // Location & Price Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          booking.location,
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                          ),
-                          overflow: TextOverflow.ellipsis,
+                ),
+                // Right Side: Content
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Sport Badge
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    _getSportIcon(booking.sportType),
+                                    size: 12,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    booking.sportType,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            // Court Name
+                            Text(
+                              booking.courtName,
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black87,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            // Location
+                            Row(
+                              children: [
+                                Icon(Icons.location_on,
+                                    size: 12, color: Colors.grey[500]),
+                                const SizedBox(width: 2),
+                                Expanded(
+                                  child: Text(
+                                    booking.location,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 11,
+                                      color: Colors.grey[600],
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            // Date & Time
+                            Row(
+                              children: [
+                                Icon(Icons.access_time,
+                                    size: 12, color: Colors.grey[500]),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    '${DateFormat('MMM d').format(booking.startDateTime)} • ${DateFormat('HH:mm').format(booking.startDateTime)}',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 11,
+                                      color: Colors.grey[600],
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                      ),
-                      Text(
-                        'Rp${NumberFormat('#,###', 'id_ID').format(booking.price)}',
-                        style: GoogleFonts.poppins(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
+                        // Bottom: Event Type & Price
+                        Row(
+                          children: [
+                            // Event Type Icon
+                            Icon(
+                              booking.isPublicEvent ? Icons.public : Icons.lock,
+                              size: 12,
+                              color: booking.isPublicEvent
+                                  ? Colors.green
+                                  : Colors.grey[600],
+                            ),
+                            const Spacer(),
+                            // Price
+                            Text(
+                              'Rp ${NumberFormat('#,###', 'id_ID').format(booking.price)}',
+                              style: GoogleFonts.poppins(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  // Action Buttons
-                  if (isUpcoming &&
-                      booking.status != BookingStatus.cancelled) ...[
-                    const SizedBox(height: 16),
-                    _buildActionButtons(
-                        booking, model, context, isOneWeekBefore),
-                  ],
-                ],
-              ),
+                ),
+              ],
             ),
+            // Host Badge (overlay on top-right corner)
+            if (booking.isHost)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.amber.shade400,
+                        Colors.orange.shade500,
+                      ],
+                    ),
+                    borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(16),
+                      bottomLeft: Radius.circular(12),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.stars,
+                        size: 14,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Host',
+                        style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildActionButtons(Booking booking, ActivityViewModel model,
-      BuildContext context, bool isOneWeekBefore) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isSmallScreen = screenWidth < 375;
-
-    if (booking.isHost) {
-      return Column(
-        children: [
-          if (isOneWeekBefore) ...[
-            _buildActionButton(
-              'Reschedule',
-              Icons.edit_calendar,
-              Theme.of(context).colorScheme.primary,
-              () => model.showRescheduleDialog(context, booking),
-              isFullWidth: true,
+  Widget _buildEmptyState({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 64, color: Colors.grey[400]),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              title,
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
             ),
             const SizedBox(height: 8),
-          ],
-          Row(
-            children: [
-              Expanded(
-                child: _buildActionButton(
-                  isSmallScreen ? 'Cancel' : 'Cancel',
-                  Icons.close,
-                  Colors.red,
-                  () => model.showCancelDialog(context, booking),
-                  isOutlined: true,
-                  isCompact: isSmallScreen,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildActionButton(
-                  isSmallScreen ? 'Invite' : 'Invite',
-                  Icons.person_add,
-                  Colors.green,
-                  () => model.showInviteDialog(context, booking),
-                  isOutlined: true,
-                  isCompact: isSmallScreen,
-                ),
-              ),
-            ],
-          ),
-        ],
-      );
-    } else {
-      return Row(
-        children: [
-          Expanded(
-            child: _buildActionButton(
-              isSmallScreen ? 'Cancel' : 'Cancel',
-              Icons.close,
-              Colors.red,
-              () => model.showCancelDialog(context, booking),
-              isOutlined: true,
-              isCompact: isSmallScreen,
-            ),
-          ),
-          if (booking.isCoHost ?? false) ...[
-            const SizedBox(width: 8),
-            Expanded(
-              child: _buildActionButton(
-                isSmallScreen ? 'Invite' : 'Invite',
-                Icons.person_add,
-                Colors.green,
-                () => model.showInviteDialog(context, booking),
-                isOutlined: true,
-                isCompact: isSmallScreen,
-              ),
-            ),
-          ],
-        ],
-      );
-    }
-  }
-
-  Widget _buildActionButton(
-    String label,
-    IconData icon,
-    Color color,
-    VoidCallback onPressed, {
-    bool isOutlined = false,
-    bool isFullWidth = false,
-    bool isCompact = false,
-  }) {
-    return SizedBox(
-      height: isCompact ? 36 : 40,
-      width: isFullWidth ? double.infinity : null,
-      child: isOutlined
-          ? OutlinedButton(
-              onPressed: onPressed,
-              style: OutlinedButton.styleFrom(
-                foregroundColor: color,
-                side: BorderSide(color: color),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: isCompact ? 8 : 12,
-                  vertical: isCompact ? 4 : 8,
-                ),
-              ),
-              child: isCompact
-                  ? Icon(icon, size: 16)
-                  : Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(icon, size: 16),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: Text(
-                            label,
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w600,
-                              fontSize: isCompact ? 12 : 13,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-            )
-          : ElevatedButton(
-              onPressed: onPressed,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: color,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: isCompact ? 8 : 12,
-                  vertical: isCompact ? 4 : 8,
-                ),
-              ),
-              child: isCompact
-                  ? Icon(icon, size: 16)
-                  : Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(icon, size: 16),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: Text(
-                            label,
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w600,
-                              fontSize: isCompact ? 12 : 13,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-            ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.event_available,
-              size: 60,
-              color: Colors.grey[400],
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'No upcoming bookings',
-            style: GoogleFonts.poppins(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[700],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Book a court to get started',
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              color: Colors.grey[500],
-            ),
-          ),
-          const SizedBox(height: 30),
-          ElevatedButton(
-            onPressed: () {
-              final viewModel = ActivityViewModel();
-              viewModel.navigateToCreateBooking();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
-            ),
-            child: Text(
-              'Book Now',
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
               style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontSize: 14,
+                color: Colors.grey[600],
+                height: 1.5,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
-  }
-
-  Color _getStatusColor(BookingStatus status) {
-    switch (status) {
-      case BookingStatus.confirmed:
-        return Colors.green;
-      case BookingStatus.pending:
-        return Colors.orange;
-      case BookingStatus.cancelled:
-        return Colors.red;
-      case BookingStatus.completed:
-        return Colors.blue;
-    }
-  }
-
-  String _getStatusText(BookingStatus status) {
-    switch (status) {
-      case BookingStatus.confirmed:
-        return 'Confirmed';
-      case BookingStatus.pending:
-        return 'Pending';
-      case BookingStatus.cancelled:
-        return 'Cancelled';
-      case BookingStatus.completed:
-        return 'Completed';
-    }
   }
 
   IconData _getSportIcon(String sportType) {
@@ -783,16 +486,31 @@ class _ActivityViewState extends State<ActivityView> {
       case 'tennis':
         return Icons.sports_tennis;
       case 'badminton':
-        return Icons.sports;
+        return Icons.sports_tennis;
       case 'futsal':
-      case 'soccer':
+      case 'football':
         return Icons.sports_soccer;
       case 'volleyball':
         return Icons.sports_volleyball;
-      case 'squash':
-        return Icons.sports_tennis;
       default:
         return Icons.sports;
+    }
+  }
+
+  Color _getTimeUntilColor(int daysUntil) {
+    if (daysUntil == 0) return Colors.red;
+    if (daysUntil <= 2) return Colors.orange;
+    return Colors.green;
+  }
+
+  String _getTimeUntilText(int daysUntil, int hoursUntil) {
+    if (daysUntil == 0) {
+      if (hoursUntil == 0) return 'Starting soon';
+      return 'Today';
+    } else if (daysUntil == 1) {
+      return 'Tomorrow';
+    } else {
+      return 'In $daysUntil days';
     }
   }
 }
